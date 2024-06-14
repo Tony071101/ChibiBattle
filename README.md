@@ -1,5 +1,5 @@
 # ChibiBattle
-First 3D game project currently under development, 
+First 3D game project currently under development. 
 # - Gameplay:
 Like Vampire Survivor, but in 3D!
 Have 2 gamemode: Endless mode, and Level mode.
