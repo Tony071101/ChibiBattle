@@ -30,7 +30,7 @@ public class Player : MonoBehaviour
     private float currentVelocity;
     private float smoothRotationTime = 0.05f;
     private float rotateSpeed = 5f;
-    protected int maxAmmo = 90;
+    protected int maxAmmo = 999999;
     protected int currentAmmo = 30;
     protected int totalAmmo;
     protected Transform spawnBulletPos;
