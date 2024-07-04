@@ -717,7 +717,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aimColliderLayerMask:
     serializedVersion: 2
-    m_Bits: 1015
+    m_Bits: 759
 --- !u!114 &8790580784656583324
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -732,7 +732,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aimColliderLayerMask:
     serializedVersion: 2
-    m_Bits: 1015
+    m_Bits: 759
 --- !u!114 &3801489471920302536
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -747,9 +747,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   aimColliderLayerMask:
     serializedVersion: 2
-    m_Bits: 1015
+    m_Bits: 759
   aimVirtualCamera: {fileID: 6568746429303249196}
-  bullet_Prefs: {fileID: 27816575899085541, guid: 2742c63ab5de6a14e96e7a1989b1673a,
+  bullet_Prefs: {fileID: 4000012716797116, guid: 2ce15a1900ef14a459f78260cd05a3dc,
     type: 3}
 --- !u!1 &6637507312205422004
 GameObject:

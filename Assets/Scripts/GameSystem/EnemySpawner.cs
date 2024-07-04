@@ -6,6 +6,8 @@ using UnityEngine;
 public class EnemySpawner : MonoBehaviour
 {
     [SerializeField] private GameObject enemyPref;
+    [SerializeField] private GameObject bulletPickupPref;
+    [SerializeField] private GameObject coinCurrencyPref;
     [SerializeField] private LevelManager levelManager;
     private int initialEnemyCount = 5;
     private float spawnRangeX = 190f;
@@ -30,7 +32,7 @@ public class EnemySpawner : MonoBehaviour
             currentWave++;
             int enemyCount = initialEnemyCount + (currentWave - 1) * 2; //Plus + 2 enemies each waves.
 
-            Debug.Log("Wave: " + currentWave);
+            Debug.LogError("Wave: " + currentWave);
             for (int i = 0; i < enemyCount; i++)
             {
                 SpawnEnemy();
@@ -60,5 +62,20 @@ public class EnemySpawner : MonoBehaviour
     private void OnEnemyDeath(GameObject enemy) {
         enemies.Remove(enemy);
         Destroy(enemy, 5f);
+        //Drop Currency.
+        DropCoinCurrency(new Vector3(enemy.transform.position.x, 
+                                        enemy.transform.position.y + 0.1f, 
+                                            enemy.transform.position.z + 0.1f));
+        //Drop Bullets.
+        DropBulletPack(enemy.transform.position);
+    }
+
+    private void DropBulletPack(Vector3 position)
+    {
+        Instantiate(bulletPickupPref, position, Quaternion.identity);
+    }
+
+    private void DropCoinCurrency(Vector3 position) {
+        Instantiate(coinCurrencyPref, position, Quaternion.identity);
     }
 }

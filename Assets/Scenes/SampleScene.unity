@@ -248,6 +248,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Saori
       objectReference: {fileID: 0}
+    - target: {fileID: 2806838053642119654, guid: 1163172eda759904bb19a31068f2d03d,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 6340975008206293043, guid: 1163172eda759904bb19a31068f2d03d,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -1400,6 +1405,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   enemyPref: {fileID: 361131513113769619, guid: e4a37aa3a5b09234b951a293a34fa3ef,
     type: 3}
+  bulletPickupPref: {fileID: 5552040735408238989, guid: 007d7a22d896c9b4c9c85acaba71f5a4,
+    type: 3}
+  coinCurrencyPref: {fileID: 1498403948531744, guid: fa2c57d3f28a5e6419393e8bc3eeb32a,
+    type: 3}
   levelManager: {fileID: 2062327500}
 --- !u!4 &1894442575
 Transform:
@@ -1690,6 +1699,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 5340715009806695450, guid: d868c4a4133ebf74d816f69d8fcb6891,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6400750635094487944, guid: d868c4a4133ebf74d816f69d8fcb6891,
         type: 3}

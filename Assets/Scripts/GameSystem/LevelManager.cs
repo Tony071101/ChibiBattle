@@ -30,7 +30,7 @@ public class LevelManager : MonoBehaviour
         {
             currentLevel++;
             StartCoroutine(StartLevelWithDelay(currentLevel));
-            Debug.Log("Level " + currentLevel);
+            Debug.LogError("Level " + currentLevel);
         }
         else
         {

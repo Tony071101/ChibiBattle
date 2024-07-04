@@ -831,7 +831,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efc4d9c17119a354ebb6940feff4a2e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
+  maxHealth: 500
 --- !u!1 &1528792159809216981
 GameObject:
   m_ObjectHideFlags: 0
@@ -6265,7 +6265,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75c0414ca8677794fbdbaffc6b480482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleeDamage: 0
+  meleeDamage: 10
 --- !u!1 &8440084312763229181
 GameObject:
   m_ObjectHideFlags: 0

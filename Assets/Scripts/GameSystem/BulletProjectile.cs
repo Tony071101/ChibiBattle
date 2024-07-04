@@ -18,8 +18,6 @@ public class BulletProjectile : MonoBehaviour
     }
 
     private void OnCollisionEnter(Collision other) {
-        //Basiclly this is a testing identify which target hit, here's every gameobject have "targetdummy" script
-        //attached to, will be changed to "health" script for both player and enemy.
         HealthManagementSystem _healthManagement = other.gameObject.GetComponent<HealthManagementSystem>();
         if(_healthManagement != null) {
             Instantiate(vfxHitGreen, transform.position, Quaternion.identity);
