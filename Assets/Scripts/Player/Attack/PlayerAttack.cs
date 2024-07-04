@@ -11,7 +11,7 @@ public class PlayerAttack : Player
     [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
     [SerializeField] private Transform bullet_Prefs;
     private float lastSpawnTime = 0f;
-    private float spawnDelay = 0.3f; //can be modified.
+    private float bulletSpawnDelay = 0.3f; //can be modified.
     private float reloadTime = 1.8f;
 
     private void HandleAim() {
@@ -30,20 +30,21 @@ public class PlayerAttack : Player
     {
         if(_weaponManager.CurrentWeaponType == WeaponType.GunnerType) {
             HandleAim();
-            if (attackAction.ReadValue<float>() != 0f && Time.time - lastSpawnTime >= spawnDelay) {
+            if (attackAction.ReadValue<float>() != 0f && Time.time - lastSpawnTime >= bulletSpawnDelay) {
                 if(currentAmmo > 0) {
                     CheckMouseOnWorldSpace();
                     Vector3 aimDir = (mouseWorldPosition - spawnBulletPos.position).normalized;
                     Instantiate(bullet_Prefs, spawnBulletPos.position, Quaternion.LookRotation(aimDir, Vector3.up));
                     lastSpawnTime = Time.time;
                     currentAmmo--;
+                    // UI will take care of this.
                     Debug.Log("current ammo: " + currentAmmo);
                     if(currentAmmo == 0) {
                         StartCoroutine(Reload());
                     }
-                }
-                else {
-                    Debug.LogError("No bullets left! Reload!");
+                } else {
+                    // UI will take care of this.
+                    // Debug.LogError("No bullets left! Reload!");
                 }
             }
         } else if(_weaponManager.CurrentWeaponType == WeaponType.MeleeType) {
@@ -66,23 +67,35 @@ public class PlayerAttack : Player
         {
             IsReloading = true;
             _anim.SetLayerWeight(2, 1);
-            Debug.LogWarning("Reloading...");
+            // UI will take care of this.
+            // Debug.LogWarning("Reloading...");
             yield return new WaitForSeconds(reloadTime);
 
             int bulletsToLoad = Mathf.Min(30 - currentAmmo, totalAmmo);
             currentAmmo += bulletsToLoad;
             totalAmmo -= bulletsToLoad;
-            Debug.Log("IEnum reload currentAmmo: " + currentAmmo);
-            Debug.Log("total ammo: " + totalAmmo);
+            Debug.LogWarning("IEnum reload currentAmmo: " + currentAmmo);
+            Debug.LogWarning("total ammo: " + totalAmmo);
             IsReloading = false;
             _anim.SetLayerWeight(2, 0);
             // Play reload complete sound if needed
-            Debug.LogWarning("Reload complete.");
+            // Debug.LogWarning("Reload complete.");
+            // UI will take care of this.
         }
         else
         {
             // No bullets left in reserve
-            Debug.LogError("No bullets left in reserve!");
+            // UI will take care of this.
+            // Debug.LogError("No bullets left in reserve!");
         }
+    }
+
+    public void OnAmmoAdd(int amountToAdd) {
+        if (totalAmmo + amountToAdd > 90)
+        {
+            amountToAdd = 90 - totalAmmo;
+        }
+        totalAmmo += amountToAdd;
+        Debug.LogWarning("Ammo picked up! Total ammo now: " + totalAmmo);
     }
 }

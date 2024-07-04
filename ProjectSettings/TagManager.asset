@@ -17,10 +17,10 @@ TagManager:
   - Camera
   - Bullet
   - Enemy
-  - 
-  - 
-  - 
-  - 
+  - WeaponMelee
+  - EnemyWeaponMelee
+  - Coin
+  - BulletPack
   - 
   - 
   - 

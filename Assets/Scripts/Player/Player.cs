@@ -5,6 +5,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using Cinemachine;
 using Unity.VisualScripting.Dependencies.Sqlite;
+using Unity.PlasticSCM.Editor.WebApi;
 [RequireComponent(typeof(Rigidbody), typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
@@ -30,9 +31,8 @@ public class Player : MonoBehaviour
     private float currentVelocity;
     private float smoothRotationTime = 0.05f;
     private float rotateSpeed = 5f;
-    protected int maxAmmo = 999999;
     protected int currentAmmo = 30;
-    protected int totalAmmo;
+    protected int totalAmmo = 90;
     protected Transform spawnBulletPos;
     protected bool _isMoving = false;
     protected bool IsMoving {
@@ -71,8 +71,11 @@ public class Player : MonoBehaviour
         attackAction = _playerInput.actions.FindAction("Attack");
         cameraLookAction = _playerInput.actions.FindAction("CameraLook");
         reloadAction = _playerInput.actions.FindAction("Reload");
-        totalAmmo = maxAmmo;
-        spawnBulletPos = GameObject.FindGameObjectWithTag("SpawnBulletPos").transform;
+        GameObject spawnBulletObj = GameObject.FindGameObjectWithTag("SpawnBulletPos");
+        if (spawnBulletObj != null)
+        {
+            spawnBulletPos = spawnBulletObj.transform;
+        }
     }
 
     private void Update() {
