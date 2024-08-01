@@ -68,6 +68,8 @@ public class EnemySpawner : MonoBehaviour
                                             enemy.transform.position.z + 0.1f));
         //Drop Bullets.
         DropBulletPack(enemy.transform.position);
+        //Drop Experience.
+        CharacterProgression.Instance.AddExperience();
     }
 
     private void DropBulletPack(Vector3 position)

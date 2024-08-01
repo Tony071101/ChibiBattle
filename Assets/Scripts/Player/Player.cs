@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 using Cinemachine;
 using Unity.VisualScripting.Dependencies.Sqlite;
 using Unity.PlasticSCM.Editor.WebApi;
+using System;
 [RequireComponent(typeof(Rigidbody), typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
@@ -14,6 +15,7 @@ public class Player : MonoBehaviour
     protected Camera _mainCamera;
     protected WeaponManager _weaponManager;
     private HealthManagementSystem healthManagementSystem;
+    private CharacterProgression characterProgression;
     private PlayerMove playerMove;
     private PlayerAttack playerAttack;
     #region InputSystem
@@ -53,9 +55,17 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Awake() {
+    protected virtual void Awake() {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+
+        characterProgression = CharacterProgression.Instance;
+        if (characterProgression != null) {
+            characterProgression.OnLevelUp += ApplyBonusHealth;
+            Debug.Log("Subscribed to OnLevelUp event.");
+        } else {
+            Debug.LogError("Can't Subscribe to OnLevelUp event.");
+        }
     }
 
     private void Start() {
@@ -75,6 +85,13 @@ public class Player : MonoBehaviour
         if (spawnBulletObj != null)
         {
             spawnBulletPos = spawnBulletObj.transform;
+        }
+    }
+
+    private void OnDestroy() {
+        if (characterProgression != null) {
+            characterProgression.OnLevelUp -= ApplyBonusHealth;
+            Debug.Log("Unsubscribed from OnLevelUp event.");
         }
     }
 
@@ -131,5 +148,12 @@ public class Player : MonoBehaviour
     {
         _anim.SetTrigger(AnimationStrings.death);
         if (_playerInput != null) _playerInput.enabled = false;
+    }
+
+    private void ApplyBonusHealth(object sender, EventArgs e) {
+        if(healthManagementSystem != null && characterProgression != null) {
+            int additionalHealth = Mathf.RoundToInt(characterProgression.bonusHealth);
+            healthManagementSystem.IncreaseMaxHealth(additionalHealth);
+        }
     }
 }

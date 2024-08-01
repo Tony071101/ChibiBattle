@@ -28,4 +28,20 @@ public class HealthManagementSystem : MonoBehaviour
             Debug.Log(gameObject.name + " is already dead.");
         }
     }
+
+
+    //Fix this, this function called 3 times.
+    //If this fix, we can done with increase HP.
+    public void IncreaseMaxHealth(int amount) {
+        maxHealth += amount;
+        currentHealth += amount;
+    }
+
+    //This might be use in the future.
+    public void Heal(int amount) {
+        currentHealth += amount;
+        if (currentHealth > maxHealth) {
+            currentHealth = maxHealth;
+        }
+    }
 }
