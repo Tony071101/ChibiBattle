@@ -7,6 +7,7 @@ public class PlayerMove : Player
     private float moveSpeed;
     private Vector3 moveDirectionRelativeToCamera;
     private Vector3 direction;
+    protected override void Awake() {}
     protected override void OnMove()
     {
         direction = moveAction.ReadValue<Vector3>();

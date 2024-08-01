@@ -14,6 +14,7 @@ public class PlayerAttack : Player
     private float bulletSpawnDelay = 0.3f; //can be modified.
     private float reloadTime = 1.8f;
 
+    protected override void Awake() {}
     private void HandleAim() {
         if(attackAction.ReadValue<float>() != 0f) {
             aimVirtualCamera.gameObject.SetActive(true);
