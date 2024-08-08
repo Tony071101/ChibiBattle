@@ -43,7 +43,7 @@ public class EnemySpawner : MonoBehaviour
             // Tăng số lượng kẻ thù cho wave tiếp theo
         }
 
-        levelManager.OnAllEnemiesDefeated();
+        GameManager.Instance.GameManagerOnAllEnemiesDefeated();
     }
 
     private void SpawnEnemy()

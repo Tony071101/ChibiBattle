@@ -62,7 +62,6 @@ public class Player : MonoBehaviour
         characterProgression = CharacterProgression.Instance;
         if (characterProgression != null) {
             characterProgression.OnLevelUp += ApplyBonusHealth;
-            Debug.Log("Subscribed to OnLevelUp event.");
         } else {
             Debug.LogError("Can't Subscribe to OnLevelUp event.");
         }
@@ -91,7 +90,6 @@ public class Player : MonoBehaviour
     private void OnDestroy() {
         if (characterProgression != null) {
             characterProgression.OnLevelUp -= ApplyBonusHealth;
-            Debug.Log("Unsubscribed from OnLevelUp event.");
         }
     }
 

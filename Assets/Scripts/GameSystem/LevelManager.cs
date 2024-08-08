@@ -4,16 +4,19 @@ using UnityEngine;
 
 public class LevelManager : MonoBehaviour
 {
-    [SerializeField] private EnemySpawner enemySpawner;
-    private int currentLevel = 1;
+    public static LevelManager Instance { get; private set; }
 
-    private void Start()
-    {
-        Debug.Log("Start Level " + currentLevel);
-        StartCoroutine(StartLevelWithDelay(currentLevel));
+    [SerializeField] private EnemySpawner enemySpawner;
+    private void Awake() {
+        if(Instance != null) {
+            Destroy(gameObject);
+        }
+        else {
+            Instance = this;
+        }
     }
 
-    private IEnumerator StartLevelWithDelay(int level)
+    public IEnumerator StartLevelWithDelay(int level)
     {
         yield return new WaitForSeconds(5f);
         StartLevel(level);
@@ -24,7 +27,7 @@ public class LevelManager : MonoBehaviour
         enemySpawner.StartLevel(level);
     }
 
-    public void OnAllEnemiesDefeated()
+    public void OnAllEnemiesDefeated(int currentLevel)
     {
         if (currentLevel < 5)
         {
@@ -34,8 +37,7 @@ public class LevelManager : MonoBehaviour
         }
         else
         {
-            // Game hoàn tất hoặc xử lý khác nếu level > 5
-            Debug.Log("Game Completed!");
+            GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
         }
     }
 }
