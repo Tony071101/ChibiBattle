@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CharacterProgression : MonoBehaviour
 {
-    public static CharacterProgression Instance;
+    public static CharacterProgression Instance { get; private set; }
     public float bonusHealth { get; private set; } = 10;
     public float bonusDamage { get; private set; } = 10;
     private int experiencePoints;
@@ -40,6 +40,7 @@ public class CharacterProgression : MonoBehaviour
             Debug.Log("Level Up! New Level: " + level);
 
             OnLevelUp?.Invoke(this, EventArgs.Empty);
+            GameManager.Instance.PlayerLevelUp();
         }
     }
 
