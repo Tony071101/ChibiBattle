@@ -10,10 +10,11 @@ public class EnemyReferences : MonoBehaviour
     public Animator _anim { get; private set; }
     public HealthManagementSystem healthManagementSystem { get; private set; }
     public float pathUpdateDelay { get; private set; } = 0.2f;
-
+    public WorldspaceHealthBar worldspaceHealthBar { get; private set; }
     private void Awake() {
         navMeshAgent = GetComponent<NavMeshAgent>();
         _anim = GetComponent<Animator>();
         healthManagementSystem = GetComponent<HealthManagementSystem>();
+        worldspaceHealthBar = GetComponentInChildren<WorldspaceHealthBar>();
     }
 }

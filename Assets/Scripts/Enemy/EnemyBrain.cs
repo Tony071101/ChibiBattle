@@ -26,6 +26,7 @@ public class EnemyBrain : MonoBehaviour
 
     private void Update()
     {
+        enemyReferences.worldspaceHealthBar.UpdateHealthBar(enemyReferences.healthManagementSystem.currentHealth, enemyReferences.healthManagementSystem.GetMaxHealth());
         if (enemyReferences.healthManagementSystem.currentHealth > 0)
         {
             TargetInSight();

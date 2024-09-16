@@ -18,20 +18,15 @@ public class HealthManagementSystem : MonoBehaviour
     public void DamageDealt(int damage) {
         if (currentHealth > 0) {
             currentHealth -= damage;
-            Debug.LogError(gameObject.name + " took damage, current health: " + currentHealth);
 
             if (currentHealth <= 0) {
-                currentHealth = 0; // Ensure health doesn't drop below 0
+                currentHealth = 0;
                 OnDeath?.Invoke(this, EventArgs.Empty);
             }
         } else {
-            Debug.Log(gameObject.name + " is already dead.");
         }
     }
 
-
-    //Fix this, this function called 3 times.
-    //If this fix, we can done with increase HP.
     public void IncreaseMaxHealth(int amount) {
         maxHealth += amount;
         currentHealth += amount;
@@ -44,4 +39,6 @@ public class HealthManagementSystem : MonoBehaviour
             currentHealth = maxHealth;
         }
     }
+
+    public int GetMaxHealth() { return maxHealth; }
 }

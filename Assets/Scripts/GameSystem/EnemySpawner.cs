@@ -12,37 +12,42 @@ public class EnemySpawner : MonoBehaviour
     private int initialEnemyCount = 5;
     private float spawnRangeX = 190f;
     private float spawnRangeZ = 190f;
-    private int currentWave = 0;
+    public int currentWave { get; private set; }
     private List<GameObject> enemies = new List<GameObject>();
 
     public void StartLevel(int level)
     {
         StopAllCoroutines();
-        currentWave = 0;
+        currentWave = 1;
         initialEnemyCount = 5 + (level - 1) * 2;
         StartCoroutine(SpawnWaves(level));
     }
 
     private IEnumerator SpawnWaves(int level)
     {
-        int maxWaves = 3 + (level / 2);
-        while (currentWave < 3)
+        int baseWaves = 3;
+        int maxWaves = baseWaves + (level % 2 == 0 ? 1 : 0);
+        while (true)
         {
             yield return new WaitForSeconds(5f);
-            currentWave++;
-            int enemyCount = initialEnemyCount + (currentWave - 1) * 2; //Plus + 2 enemies each waves.
-
-            Debug.LogError("Wave: " + currentWave);
+            int extraEnemies = (level == 3 || level == 5) ? 2 : 0;
+            int enemyCount = initialEnemyCount + (currentWave - 1) * 2 + extraEnemies;
+            GameManager.Instance.ChangeState(GameManager.GameState.Playing);
             for (int i = 0; i < enemyCount; i++)
             {
                 SpawnEnemy();
             }
 
-            // Đợi cho đến khi tất cả kẻ thù trong wave hiện tại bị tiêu diệt
             yield return new WaitUntil(() => enemies.Count == 0);
-            // Tăng số lượng kẻ thù cho wave tiếp theo
+            currentWave++;
+            if(currentWave > maxWaves) {
+                currentWave = 1;
+                break;
+            } else {
+                StartCoroutine(UIManager.Instance.ShowGameWave(currentWave));
+            }
         }
-
+        levelManager.OnAllWavesCompleted(level);
         GameManager.Instance.GameManagerOnAllEnemiesDefeated();
     }
 
@@ -62,13 +67,10 @@ public class EnemySpawner : MonoBehaviour
     private void OnEnemyDeath(GameObject enemy) {
         enemies.Remove(enemy);
         Destroy(enemy, 5f);
-        //Drop Currency.
         DropCoinCurrency(new Vector3(enemy.transform.position.x, 
                                         enemy.transform.position.y + 0.1f, 
                                             enemy.transform.position.z + 0.1f));
-        //Drop Bullets.
         DropBulletPack(enemy.transform.position);
-        //Drop Experience.
         CharacterProgression.Instance.AddExperience();
     }
 
@@ -79,5 +81,9 @@ public class EnemySpawner : MonoBehaviour
 
     private void DropCoinCurrency(Vector3 position) {
         Instantiate(coinCurrencyPref, position, Quaternion.identity);
+    }
+
+    public void ResetWave() {
+        currentWave = 1;
     }
 }
