@@ -38,14 +38,10 @@ public class PlayerAttack : Player
                     Instantiate(bullet_Prefs, spawnBulletPos.position, Quaternion.LookRotation(aimDir, Vector3.up));
                     lastSpawnTime = Time.time;
                     currentAmmo--;
-                    // UI will take care of this.
-                    Debug.Log("current ammo: " + currentAmmo);
                     if(currentAmmo == 0) {
                         StartCoroutine(Reload());
                     }
                 } else {
-                    // UI will take care of this.
-                    // Debug.LogError("No bullets left! Reload!");
                 }
             }
         } else if(_weaponManager.CurrentWeaponType == WeaponType.MeleeType) {
@@ -75,8 +71,6 @@ public class PlayerAttack : Player
             int bulletsToLoad = Mathf.Min(30 - currentAmmo, totalAmmo);
             currentAmmo += bulletsToLoad;
             totalAmmo -= bulletsToLoad;
-            Debug.LogWarning("IEnum reload currentAmmo: " + currentAmmo);
-            Debug.LogWarning("total ammo: " + totalAmmo);
             IsReloading = false;
             _anim.SetLayerWeight(2, 0);
             // Play reload complete sound if needed
@@ -97,6 +91,5 @@ public class PlayerAttack : Player
             amountToAdd = 90 - totalAmmo;
         }
         totalAmmo += amountToAdd;
-        Debug.LogWarning("Ammo picked up! Total ammo now: " + totalAmmo);
     }
 }

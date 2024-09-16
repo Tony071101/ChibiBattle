@@ -4,10 +4,11 @@ using UnityEngine;
 
 public class CoinCurrency : MonoBehaviour
 {
-    private int coinCurrency = 10;
+    private int coinCurrency;
     private void OnCollisionEnter(Collision other) {
         if(other.gameObject.CompareTag("Player")) {
-            Debug.Log("Player collide with Coin, Coin + " + coinCurrency++);
+            Player player = FindObjectOfType<Player>();
+            player.coinCurrency += 10;   
             Destroy(gameObject);
         }
     }

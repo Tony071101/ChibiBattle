@@ -6,12 +6,13 @@ using UnityEngine;
 public class CharacterProgression : MonoBehaviour
 {
     public static CharacterProgression Instance { get; private set; }
-    public float bonusHealth { get; private set; } = 10;
-    public float bonusDamage { get; private set; } = 10;
-    private int experiencePoints;
-    private int level;
+    public float bonusHealth { get; private set; } = 20f;
+    public float bonusDamage { get; private set; } = 5f;
+    public int experiencePoints { get; private set; }
+    public int healthPercentageIncrease { get; private set; }
+    public int damagePercentageIncrease { get; private set; }
+    public int level { get; private set; }
     private const int pointsToLevelUp = 50;
-    public event EventHandler OnLevelUp;
 
     private void Awake() {
         if(Instance != null) {
@@ -25,7 +26,6 @@ public class CharacterProgression : MonoBehaviour
     public void AddExperience()
     {
         experiencePoints += 10;
-        Debug.LogWarning("Experience point: " + experiencePoints);
         CheckForLevelUp();
     }
 
@@ -35,23 +35,20 @@ public class CharacterProgression : MonoBehaviour
         {
             experiencePoints -= pointsToLevelUp; // Reset experience points after leveling up
             level++;
-            OnLevelUpHealth();
-            OnLevelUpDamage();
-            Debug.Log("Level Up! New Level: " + level);
-
-            OnLevelUp?.Invoke(this, EventArgs.Empty);
+            healthPercentageIncrease = UnityEngine.Random.Range(2, 11);
+            damagePercentageIncrease = UnityEngine.Random.Range(2, 11);
             GameManager.Instance.PlayerLevelUp();
         }
     }
 
-    private void OnLevelUpHealth()
+    public void OnLevelUpHealth()
     {
-        float percentageIncrease = UnityEngine.Random.Range(2f, 10f); // Random percentage between 2% and 10%
-        bonusHealth += bonusHealth * percentageIncrease;
+        bonusHealth += bonusHealth * (healthPercentageIncrease / 100f);
     }
 
-    private void OnLevelUpDamage() {
-        float percentageIncrease = UnityEngine.Random.Range(0.02f, 0.10f); // Random percentage between 2% and 10%
-        bonusDamage += bonusDamage * percentageIncrease;
+    public void OnLevelUpDamage() {
+        bonusDamage += bonusDamage * (damagePercentageIncrease / 10f);
     }
+
+    public int GetPointToLvlUp() { return pointsToLevelUp; }
 }

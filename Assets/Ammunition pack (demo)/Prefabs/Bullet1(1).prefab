@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 4000012716797116}
   - component: {fileID: 7097754522956903624}
   - component: {fileID: 4880765737257659227}
+  - component: {fileID: 579104043605674019}
   m_Layer: 8
   m_Name: Bullet1(1)
   m_TagString: Untagged
@@ -29,7 +30,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children:
   - {fileID: 4000014073500310}
   - {fileID: 4000013346800150}
@@ -78,6 +79,23 @@ MonoBehaviour:
     type: 3}
   vfxHitRed: {fileID: 8300470566771811202, guid: 85c011ac17cbeb24fbf7ab3022593b11,
     type: 3}
+--- !u!114 &579104043605674019
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1000011023395326}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: 739a417926883db46a0789aa13bc5456, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
 --- !u!1 &1000011260505556
 GameObject:
   m_ObjectHideFlags: 0
@@ -104,8 +122,8 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
   m_LocalPosition: {x: -0, y: 0, z: 0}
-  m_LocalScale: {x: 0.2, y: 0.2, z: 0.2}
-  m_ConstrainProportionsScale: 0
+  m_LocalScale: {x: 0.5, y: 0.5, z: 0.5}
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4000012716797116}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
@@ -119,7 +137,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4000014073500310}
   - component: {fileID: 137000013923254932}
-  - component: {fileID: 6778412160250501648}
+  - component: {fileID: 8285416538038791823}
   m_Layer: 8
   m_Name: Bullet1
   m_TagString: Untagged
@@ -138,7 +156,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0, y: 0, z: 0}
   m_LocalScale: {x: 0.88533247, y: 0.88533247, z: 0.88533247}
-  m_ConstrainProportionsScale: 0
+  m_ConstrainProportionsScale: 1
   m_Children: []
   m_Father: {fileID: 4000012716797116}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -196,7 +214,7 @@ SkinnedMeshRenderer:
     m_Center: {x: -0.39144102, y: 0.000000007450581, z: -0.000000011175871}
     m_Extent: {x: 0.39144102, y: 0.07166327, z: 0.062062215}
   m_DirtyAABB: 0
---- !u!65 &6778412160250501648
+--- !u!65 &8285416538038791823
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

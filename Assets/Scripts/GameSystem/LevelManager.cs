@@ -27,17 +27,24 @@ public class LevelManager : MonoBehaviour
         enemySpawner.StartLevel(level);
     }
 
+    public void OnAllWavesCompleted(int level)
+    {
+        StartCoroutine(HandleLevelCompletion(level));
+    }
+
+    private IEnumerator HandleLevelCompletion(int level)
+    {
+        int maxLevel = 5;
+        if(level < maxLevel) {
+            yield return StartCoroutine(UIManager.Instance.ShowGameLevel(level + 1));
+            enemySpawner.StartLevel(level + 1);
+        } else {
+            yield break;
+        }
+    }
+
     public void OnAllEnemiesDefeated(int currentLevel)
     {
-        if (currentLevel < 5)
-        {
-            currentLevel++;
-            StartCoroutine(StartLevelWithDelay(currentLevel));
-            Debug.LogError("Level " + currentLevel);
-        }
-        else
-        {
-            GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
-        }
+        StartCoroutine(StartLevelWithDelay(currentLevel));
     }
 }

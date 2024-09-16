@@ -51,5 +51,6 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "ChibiBattle.sln"
+    "dotnet.defaultSolution": "ChibiBattle.sln",
+    "C_Cpp.errorSquiggles": "enabled"
 }

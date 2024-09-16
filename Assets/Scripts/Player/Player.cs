@@ -7,6 +7,7 @@ using Cinemachine;
 using Unity.VisualScripting.Dependencies.Sqlite;
 using Unity.PlasticSCM.Editor.WebApi;
 using System;
+using System.Runtime.InteropServices.WindowsRuntime;
 [RequireComponent(typeof(Rigidbody), typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
@@ -14,8 +15,7 @@ public class Player : MonoBehaviour
     protected Animator _anim;
     protected Camera _mainCamera;
     protected WeaponManager _weaponManager;
-    private HealthManagementSystem healthManagementSystem;
-    private CharacterProgression characterProgression;
+    public HealthManagementSystem healthManagementSystem { get; private set; }
     private PlayerMove playerMove;
     private PlayerAttack playerAttack;
     #region InputSystem
@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
     private float rotateSpeed = 5f;
     protected int currentAmmo = 30;
     protected int totalAmmo = 90;
+    public int coinCurrency { get; set; } = 0;
     protected Transform spawnBulletPos;
     protected bool _isMoving = false;
     protected bool IsMoving {
@@ -56,15 +57,7 @@ public class Player : MonoBehaviour
     }
 
     protected virtual void Awake() {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-
-        characterProgression = CharacterProgression.Instance;
-        if (characterProgression != null) {
-            characterProgression.OnLevelUp += ApplyBonusHealth;
-        } else {
-            Debug.LogError("Can't Subscribe to OnLevelUp event.");
-        }
+        
     }
 
     private void Start() {
@@ -84,12 +77,6 @@ public class Player : MonoBehaviour
         if (spawnBulletObj != null)
         {
             spawnBulletPos = spawnBulletObj.transform;
-        }
-    }
-
-    private void OnDestroy() {
-        if (characterProgression != null) {
-            characterProgression.OnLevelUp -= ApplyBonusHealth;
         }
     }
 
@@ -145,13 +132,24 @@ public class Player : MonoBehaviour
     private void DisablePlayerActions()
     {
         _anim.SetTrigger(AnimationStrings.death);
+        DisablePlayerInput();
+    }
+
+    public void DisablePlayerInput() {
         if (_playerInput != null) _playerInput.enabled = false;
     }
 
-    private void ApplyBonusHealth(object sender, EventArgs e) {
-        if(healthManagementSystem != null && characterProgression != null) {
-            int additionalHealth = Mathf.RoundToInt(characterProgression.bonusHealth);
+    public void EnablePlayerInput() {
+        if (_playerInput != null) _playerInput.enabled = true;
+    }
+
+    public void ApplyBonusHealth() {
+        if(healthManagementSystem != null) {
+            int additionalHealth = Mathf.RoundToInt(CharacterProgression.Instance.bonusHealth);
             healthManagementSystem.IncreaseMaxHealth(additionalHealth);
         }
     }
+
+    public int GetTotalAmmo() { return totalAmmo; }
+    public int GetCurrentAmmno() { return currentAmmo; }
 }
