@@ -15,6 +15,7 @@ public class PlayerAttack : Player
     private float reloadTime = 1.8f;
 
     protected override void Awake() {}
+    protected override void Update() {}
     private void HandleAim() {
         if(attackAction.ReadValue<float>() != 0f) {
             aimVirtualCamera.gameObject.SetActive(true);

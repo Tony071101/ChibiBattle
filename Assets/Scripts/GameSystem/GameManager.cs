@@ -12,6 +12,7 @@ public class GameManager : MonoBehaviour
     private EnemySpawner enemySpawner;
     private int currentLevel;
     [SerializeField] private LevelManager levelManager;
+    [SerializeField] private PlayerData playerData;
 
     private void Awake() {
         if(Instance != null) {
@@ -48,6 +49,7 @@ public class GameManager : MonoBehaviour
             case GameState.StartGame:
                 // Start the game
                 StartGame();
+                ResetPlayerState();
                 break;
             case GameState.Playing:
                 // Playing
@@ -98,6 +100,7 @@ public class GameManager : MonoBehaviour
     {
         Time.timeScale = 0;
         UIManager.Instance.ShowGameOverScreen();
+        UpdateCoinCurrencyInPlayerData();
     }
 
     public void GameManagerOnAllEnemiesDefeated()
@@ -117,5 +120,19 @@ public class GameManager : MonoBehaviour
         Cursor.visible = true;
         Time.timeScale = 0;
         UIManager.Instance.ShowCharacterProgressionScreen();
+    }
+
+    private void ResetPlayerState() {
+        Player player = FindObjectOfType<Player>();
+        if(player != null) {
+            player.ResetIsDead();
+        }
+    }
+
+    private void UpdateCoinCurrencyInPlayerData() {
+        Player player = FindObjectOfType<Player>();
+        if(player != null && playerData != null) {
+            playerData.totalCoin += player.GetCoinCurrency();
+        }
     }
 }
