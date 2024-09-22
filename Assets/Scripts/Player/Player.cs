@@ -32,10 +32,11 @@ public class Player : MonoBehaviour
     private float angle;
     private float currentVelocity;
     private float smoothRotationTime = 0.05f;
+    private bool isDead = false;
     private float rotateSpeed = 5f;
     protected int currentAmmo = 30;
     protected int totalAmmo = 90;
-    public int coinCurrency { get; set; } = 0;
+    private int coinCurrency = 0;
     protected Transform spawnBulletPos;
     protected bool _isMoving = false;
     protected bool IsMoving {
@@ -80,9 +81,18 @@ public class Player : MonoBehaviour
         }
     }
 
-    private void Update() {
-        if(healthManagementSystem != null && healthManagementSystem.currentHealth <= 0) {
+    protected virtual void Update()
+    {
+        PlayerDeath();
+    }
+
+    private void PlayerDeath()
+    {
+        if (healthManagementSystem != null && healthManagementSystem.currentHealth <= 0 && !isDead)
+        {
+            GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
             DisablePlayerActions();
+            isDead = true;
         }
     }
 
@@ -150,6 +160,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void ResetIsDead() {
+        isDead = false;
+    }
+
     public int GetTotalAmmo() { return totalAmmo; }
     public int GetCurrentAmmno() { return currentAmmo; }
+    public int GetCoinCurrency() { return coinCurrency; }
+    public void SetCoinCurrency(int amount) { coinCurrency = amount; }
+    public void AddCoins(int amount) { coinCurrency += amount; }
 }

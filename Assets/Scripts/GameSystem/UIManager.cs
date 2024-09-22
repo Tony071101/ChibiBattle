@@ -15,6 +15,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] private TextMeshProUGUI playerEXPTxt;
     [SerializeField] private TextMeshProUGUI waveTxt;
     [SerializeField] private TextMeshProUGUI gameLvlTxt;
+    [SerializeField] private TextMeshProUGUI gameOverTotalCocinTxt;
     [SerializeField] private GameObject gameOverCanvas;
     [SerializeField] private GameObject gamePauseCanvas;
     [SerializeField] private GameObject characterProgressionCanvas;
@@ -86,6 +87,7 @@ public class UIManager : MonoBehaviour
     public void ShowGameOverScreen() {
         //Might need to disable other UIs.
         gameOverCanvas.SetActive(true);
+        gameOverTotalCocinTxt.text = "Total coin: " + player.GetCoinCurrency();
         player.DisablePlayerInput();
     }
 
@@ -121,7 +123,7 @@ public class UIManager : MonoBehaviour
     }
 
     public void GetPlayerCoin() {
-        playerCoinTxt.text = "Coin: " + player.coinCurrency;
+        playerCoinTxt.text = "Coin: " + player.GetCoinCurrency();
     }
 
     public void GetPlayerLevel() {

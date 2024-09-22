@@ -287,6 +287,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelManager: {fileID: 2062327500}
+  playerData: {fileID: 11400000, guid: 53694286713d67f40ae072c00f377a07, type: 2}
 --- !u!4 &61383066
 Transform:
   m_ObjectHideFlags: 0
@@ -4320,6 +4321,7 @@ MonoBehaviour:
   playerEXPTxt: {fileID: 952463012}
   waveTxt: {fileID: 878311226}
   gameLvlTxt: {fileID: 1551626468}
+  gameOverTotalCocinTxt: {fileID: 54676850}
   gameOverCanvas: {fileID: 1119871222}
   gamePauseCanvas: {fileID: 1605741530}
   characterProgressionCanvas: {fileID: 1585795674}
