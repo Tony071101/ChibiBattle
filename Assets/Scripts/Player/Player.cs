@@ -11,6 +11,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 [RequireComponent(typeof(Rigidbody), typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
+    [HideInInspector] [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
     protected Rigidbody _rigidbody;
     protected Animator _anim;
     protected Camera _mainCamera;
@@ -25,9 +26,6 @@ public class Player : MonoBehaviour
     protected InputAction cameraLookAction; 
     protected InputAction reloadAction;
     #endregion
-
-    [HideInInspector] [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
-
     protected Vector3 mouseWorldPosition;
     private float angle;
     private float currentVelocity;
@@ -37,70 +35,35 @@ public class Player : MonoBehaviour
     protected int currentAmmo = 30;
     protected int totalAmmo = 90;
     private int coinCurrency = 0;
-    protected Transform spawnBulletPos;
-    protected bool _isMoving = false;
-    protected bool IsMoving {
-        get { return _isMoving; }
-        set {
-            _isMoving = value;
-            _anim.SetBool(AnimationStrings.isMoving, value);
-        }
-    }
-
-    protected bool _isReloading = false;
-    protected bool IsReloading {
-        get { return _isReloading; }
-        set
-        {
-            _isReloading = value;
-            _anim.SetBool(AnimationStrings.isReloading, value);
-        }
-    }
-
-    protected virtual void Awake() {
-        
-    }
-
-    private void Start() {
+    
+    protected virtual void Awake() {}
+    protected virtual void Start() {
         _playerInput = GetComponent<PlayerInput>();
         _rigidbody = GetComponent<Rigidbody>();
+        _anim = GetComponentInChildren<Animator>();
+        _mainCamera = Camera.main;
+        _weaponManager = GetComponentInChildren<WeaponManager>();
         playerMove = GetComponent<PlayerMove>();
         playerAttack = GetComponent<PlayerAttack>();
-        _anim = GetComponentInChildren<Animator>();
-        _weaponManager = GetComponentInChildren<WeaponManager>();
         healthManagementSystem = GetComponentInChildren<HealthManagementSystem>();
-        _mainCamera = Camera.main;
         moveAction = _playerInput.actions.FindAction("Move");
         attackAction = _playerInput.actions.FindAction("Attack");
         cameraLookAction = _playerInput.actions.FindAction("CameraLook");
         reloadAction = _playerInput.actions.FindAction("Reload");
-        GameObject spawnBulletObj = GameObject.FindGameObjectWithTag("SpawnBulletPos");
-        if (spawnBulletObj != null)
-        {
-            spawnBulletPos = spawnBulletObj.transform;
-        }
     }
 
-    protected virtual void Update()
-    {
-        PlayerDeath();
-    }
-
+    protected virtual void Update() { PlayerDeath(); }
+    protected virtual void FixedUpdate() {}
     private void PlayerDeath()
     {
         if (healthManagementSystem != null && healthManagementSystem.currentHealth <= 0 && !isDead)
         {
-            GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
             DisablePlayerActions();
+            StartCoroutine(WaitForDeathAnim());
             isDead = true;
         }
     }
 
-    private void FixedUpdate() {
-        OnMove();
-        OnAttack();
-        OnReload();
-    }
 
     protected virtual void OnReload(){}
     protected virtual void OnMove(){}
@@ -110,12 +73,12 @@ public class Player : MonoBehaviour
         if (direction.magnitude >= 0.1f)
         {
             angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            float smoothRorate = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref currentVelocity,
+            float smoothRotate = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref currentVelocity,
             smoothRotationTime);
-            if(attackAction.ReadValue<float>() != 0f) {
-                //This is need to be empty to lock rotation when move while aimed.
-            }else{
-                transform.rotation = Quaternion.Euler(0, smoothRorate, 0);
+            smoothRotate = Mathf.Repeat(smoothRotate, 360f);
+            if (attackAction.ReadValue<float>() == 0f) 
+            {
+                transform.rotation = Quaternion.Euler(0, smoothRotate, 0);
             }
         }
     }
@@ -125,8 +88,10 @@ public class Player : MonoBehaviour
         if (direction.magnitude >= 0.1f)
         {
             float mouseX = direction.x;
-            Quaternion targetRotation = Quaternion.Euler(0f, _mainCamera.transform.eulerAngles.y + mouseX, 0f);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
+            // Quaternion targetRotation = Quaternion.Euler(0f, _mainCamera.transform.eulerAngles.y + mouseX, 0f);
+            float adjustedAngle = Mathf.Repeat(_mainCamera.transform.eulerAngles.y + mouseX, 360f);
+            Quaternion targetRotation = Quaternion.Euler(0f, adjustedAngle, 0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.unscaledDeltaTime * rotateSpeed);
         }
     }
 
@@ -145,13 +110,12 @@ public class Player : MonoBehaviour
         DisablePlayerInput();
     }
 
-    public void DisablePlayerInput() {
-        if (_playerInput != null) _playerInput.enabled = false;
+    private IEnumerator WaitForDeathAnim() {
+        float deathAnimLength = _anim.GetCurrentAnimatorStateInfo(0).length;
+        yield return new WaitForSeconds(deathAnimLength);
+        GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
     }
 
-    public void EnablePlayerInput() {
-        if (_playerInput != null) _playerInput.enabled = true;
-    }
 
     public void ApplyBonusHealth() {
         if(healthManagementSystem != null) {
@@ -159,13 +123,9 @@ public class Player : MonoBehaviour
             healthManagementSystem.IncreaseMaxHealth(additionalHealth);
         }
     }
-
-    public void ResetIsDead() {
-        isDead = false;
-    }
-
-    public int GetTotalAmmo() { return totalAmmo; }
-    public int GetCurrentAmmno() { return currentAmmo; }
+    public void DisablePlayerInput() { if (_playerInput != null) _playerInput.enabled = false; }
+    public void EnablePlayerInput() { if (_playerInput != null) _playerInput.enabled = true; }
+    public void ResetIsDead() { isDead = false; }
     public int GetCoinCurrency() { return coinCurrency; }
     public void SetCoinCurrency(int amount) { coinCurrency = amount; }
     public void AddCoins(int amount) { coinCurrency += amount; }

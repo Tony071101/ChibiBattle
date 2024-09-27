@@ -9,22 +9,56 @@ using Unity.Mathematics;
 public class PlayerAttack : Player
 {
     [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
+    [SerializeField] private CinemachineVirtualCamera playerCamera;
     [SerializeField] private Transform bullet_Prefs;
+    private Transform spawnBulletPos;
     private float lastSpawnTime = 0f;
     private float bulletSpawnDelay = 0.3f; //can be modified.
     private float reloadTime = 1.8f;
-
+    private bool isAiming = false;
+    private bool playerRotatedToCamera = false;
+    private bool _isReloading = false;
+    private bool IsReloading {
+        get { return _isReloading; }
+        set
+        {
+            _isReloading = value;
+            _anim.SetBool(AnimationStrings.isReloading, value);
+        }
+    }
     protected override void Awake() {}
+    protected override void Start() {
+        base.Start();
+
+        _weaponManager = GetComponentInChildren<WeaponManager>();
+        if(_weaponManager.CurrentWeaponType == WeaponType.GunnerType) {
+            GameObject spawnBulletObj = GameObject.FindGameObjectWithTag("SpawnBulletPos");
+            spawnBulletPos = spawnBulletObj.transform;
+        }
+    }
     protected override void Update() {}
+    protected override void FixedUpdate() {
+        OnAttack();
+        OnReload();
+        if (isAiming && !playerRotatedToCamera) {
+            RotatePlayerToCamera();
+            playerRotatedToCamera = true;
+        }
+    }
     private void HandleAim() {
         if(attackAction.ReadValue<float>() != 0f) {
-            aimVirtualCamera.gameObject.SetActive(true);
+            //Lúc được lúc không.
+            if(!isAiming) {
+                aimVirtualCamera.gameObject.SetActive(true);
+                isAiming = true;
+                playerRotatedToCamera = false;
+            }
             RotateCameraWhenAiming(cameraLookAction.ReadValue<Vector2>());
-            //Lerp used for smooth transition.
             _anim.SetLayerWeight(1, Mathf.Lerp(_anim.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
         } else {
             aimVirtualCamera.gameObject.SetActive(false);
             _anim.SetLayerWeight(1, Mathf.Lerp(_anim.GetLayerWeight(1), 0f, Time.deltaTime * 10f));
+            isAiming = false;
         }
     }
 
@@ -42,7 +76,6 @@ public class PlayerAttack : Player
                     if(currentAmmo == 0) {
                         StartCoroutine(Reload());
                     }
-                } else {
                 }
             }
         } else if(_weaponManager.CurrentWeaponType == WeaponType.MeleeType) {
@@ -65,8 +98,6 @@ public class PlayerAttack : Player
         {
             IsReloading = true;
             _anim.SetLayerWeight(2, 1);
-            // UI will take care of this.
-            // Debug.LogWarning("Reloading...");
             yield return new WaitForSeconds(reloadTime);
 
             int bulletsToLoad = Mathf.Min(30 - currentAmmo, totalAmmo);
@@ -74,15 +105,6 @@ public class PlayerAttack : Player
             totalAmmo -= bulletsToLoad;
             IsReloading = false;
             _anim.SetLayerWeight(2, 0);
-            // Play reload complete sound if needed
-            // Debug.LogWarning("Reload complete.");
-            // UI will take care of this.
-        }
-        else
-        {
-            // No bullets left in reserve
-            // UI will take care of this.
-            // Debug.LogError("No bullets left in reserve!");
         }
     }
 
@@ -93,4 +115,14 @@ public class PlayerAttack : Player
         }
         totalAmmo += amountToAdd;
     }
+
+    private void RotatePlayerToCamera() {
+        Vector3 currentRotation = transform.rotation.eulerAngles;
+        float playerCameraYRotation = playerCamera.transform.rotation.eulerAngles.y;
+        float adjustedYRotation = Mathf.Repeat(playerCameraYRotation, 360f);
+        transform.rotation = Quaternion.Euler(currentRotation.x, adjustedYRotation, currentRotation.z);
+    }
+
+    public int GetTotalAmmo() { return totalAmmo; }
+    public int GetCurrentAmmno() { return currentAmmo; }
 }
