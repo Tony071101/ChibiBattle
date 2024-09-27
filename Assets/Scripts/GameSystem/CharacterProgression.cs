@@ -12,6 +12,10 @@ public class CharacterProgression : MonoBehaviour
     public int healthPercentageIncrease { get; private set; }
     public int damagePercentageIncrease { get; private set; }
     public int level { get; private set; }
+    public int healthUpgradeCount { get; private set; } = 0;
+    public int damageUpgradeCount { get; private set; } = 0;
+    public int maxHealthUpgrades { get; private set; } = 5;
+    public int maxDamageUpgrades { get; private set; } = 5;
     private const int pointsToLevelUp = 50;
 
     private void Awake() {
@@ -41,14 +45,14 @@ public class CharacterProgression : MonoBehaviour
         }
     }
 
-    public void OnLevelUpHealth()
-    {
+    public void OnLevelUpHealth() {
         bonusHealth += bonusHealth * (healthPercentageIncrease / 100f);
+        healthUpgradeCount++;
     }
 
     public void OnLevelUpDamage() {
         bonusDamage += bonusDamage * (damagePercentageIncrease / 10f);
+        damageUpgradeCount++;
     }
-
     public int GetPointToLvlUp() { return pointsToLevelUp; }
 }

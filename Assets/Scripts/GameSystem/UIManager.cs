@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.UI;
 
 public class UIManager : MonoBehaviour
@@ -25,9 +26,9 @@ public class UIManager : MonoBehaviour
     private CharacterProgression characterProgression;
     private EnemySpawner enemySpawner;
     private float lerpSpeed = 0.01f;
-    // private HealthManagementSystem healthManagementSystem;
+    private GameObject healthBtn;
+    private GameObject damageBtn;
     public static UIManager Instance { get; private set; }
-    // Start is called before the first frame update
     private void Awake() {
         if(Instance != null) {
             Destroy(gameObject);
@@ -85,7 +86,6 @@ public class UIManager : MonoBehaviour
     }
 
     public void ShowGameOverScreen() {
-        //Might need to disable other UIs.
         gameOverCanvas.SetActive(true);
         gameOverTotalCocinTxt.text = "Total coin: " + player.GetCoinCurrency();
         player.DisablePlayerInput();
@@ -119,7 +119,8 @@ public class UIManager : MonoBehaviour
     }
 
     public void GetPlayerAmmo() {
-        playerAmmoTxt.text = player.GetCurrentAmmno() + "/" + player.GetTotalAmmo();
+        PlayerAttack playerAttack = player.GetComponent<PlayerAttack>();
+        playerAmmoTxt.text = playerAttack.GetCurrentAmmno() + "/" + playerAttack.GetTotalAmmo();
     }
 
     public void GetPlayerCoin() {
@@ -132,40 +133,51 @@ public class UIManager : MonoBehaviour
         playerEXPTxt.text = "Lvl " + CharacterProgression.Instance.level;
     }
 
-    private void CreateLevelUpBtn() {
-        float btnSpacing = 700f;
+    private void CreateLevelUpBtn()
+    {
+        float btnSpacing = 500f;
         Vector2 startPos = new Vector2(0, 0);
 
-        GameObject healthBtn = Instantiate(btnCharacterProgression, btnParent);
-        healthBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Increase Health by " + characterProgression.healthPercentageIncrease + "%";
-        healthBtn.GetComponent<Button>().onClick.AddListener(() => {
-            characterProgression.OnLevelUpHealth();
-            player.ApplyBonusHealth();
-            OnButtonClicked();
-        });
+        if(characterProgression.damageUpgradeCount >= characterProgression.maxDamageUpgrades && characterProgression.healthUpgradeCount >= characterProgression.maxHealthUpgrades) {
+            CreateHealButton(startPos);
+        }
+        
+        if(characterProgression.healthUpgradeCount < characterProgression.maxHealthUpgrades) {
+            healthBtn = CreateButton("Increase Health by " + characterProgression.healthPercentageIncrease + "%",
+            () =>
+            {
+                characterProgression.OnLevelUpHealth();
+                player.ApplyBonusHealth();
+                OnButtonClicked();
+            },
+            startPos + new Vector2(-btnSpacing, 0));
+        } else {
+            Destroy(healthBtn);
+        }
 
-        RectTransform healthButtonRect = healthBtn.GetComponent<RectTransform>();
-        healthButtonRect.anchoredPosition = startPos + new Vector2(-btnSpacing, 0);
+        if(characterProgression.damageUpgradeCount < characterProgression.maxDamageUpgrades) {
+            damageBtn = CreateButton("Increase Damage by " + characterProgression.damagePercentageIncrease + "%",
+                () =>
+                {
+                    characterProgression.OnLevelUpDamage();
+                    OnButtonClicked();
+                },
+                startPos + new Vector2(btnSpacing, 0));
+        } else {
+            Destroy(damageBtn);
+        }
+        
+    }
 
-        GameObject damageBtn = Instantiate(btnCharacterProgression, btnParent);
-        damageBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Increase Damage by " + characterProgression.damagePercentageIncrease + "%";
-        damageBtn.GetComponent<Button>().onClick.AddListener(() => {
-            characterProgression.OnLevelUpDamage();
-            OnButtonClicked();
-        });
-
-        RectTransform damageButtonRect = damageBtn.GetComponent<RectTransform>();
-        damageButtonRect.anchoredPosition = startPos;
-
-        GameObject healBtn = Instantiate(btnCharacterProgression, btnParent);
-        healBtn.GetComponentInChildren<TextMeshProUGUI>().text = "Heal";
-        healBtn.GetComponent<Button>().onClick.AddListener(() => {
-            player.healthManagementSystem.Heal(100); 
-            OnButtonClicked();
-        });
-
-        RectTransform healButtonRect = healBtn.GetComponent<RectTransform>();
-        healButtonRect.anchoredPosition = startPos + new Vector2(btnSpacing, 0);
+    private void CreateHealButton(Vector2 startPos)
+    {
+        CreateButton("Heal",
+            () =>
+            {
+                player.healthManagementSystem.Heal(100);
+                OnButtonClicked();
+            },
+            startPos);
     }
 
     public void OnButtonClicked() {
@@ -178,5 +190,16 @@ public class UIManager : MonoBehaviour
         player.EnablePlayerInput();
 
         GameManager.Instance.ChangeState(GameManager.GameState.Playing);
+    }
+
+    private GameObject CreateButton(string buttonText, UnityAction onClickAction, Vector2 position) {
+        GameObject btn = Instantiate(btnCharacterProgression, btnParent);
+        btn.GetComponentInChildren<TextMeshProUGUI>().text = buttonText;
+        btn.GetComponent<Button>().onClick.AddListener(onClickAction);
+
+        RectTransform buttonRect = btn.GetComponent<RectTransform>();
+        buttonRect.anchoredPosition = position;
+
+        return btn;
     }
 }

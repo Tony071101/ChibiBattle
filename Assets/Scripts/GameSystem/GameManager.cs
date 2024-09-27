@@ -98,6 +98,8 @@ public class GameManager : MonoBehaviour
 
     private void EndGame()
     {
+        Cursor.lockState = CursorLockMode.None;
+        Cursor.visible = true;
         Time.timeScale = 0;
         UIManager.Instance.ShowGameOverScreen();
         UpdateCoinCurrencyInPlayerData();
