@@ -7,6 +7,9 @@ public class PlayerMove : Player
     private float moveSpeed;
     private Vector3 moveDirectionRelativeToCamera;
     private Vector3 direction;
+    private float angle;
+    private float currentVelocity;
+    private float smoothRotationTime = 0.05f;
     private bool _isMoving = false;
     private bool IsMoving {
         get { return _isMoving; }
@@ -17,7 +20,9 @@ public class PlayerMove : Player
     }
     protected override void Awake() {}
     protected override void Start() { base.Start(); }
-    protected override void Update() {}
+    protected override void Update() {
+        
+    }
     protected override void FixedUpdate()
     {
         OnMove();
@@ -28,7 +33,6 @@ public class PlayerMove : Player
         IsMoving = direction != Vector3.zero;
         if(attackAction.ReadValue<float>() != 0f && _weaponManager.CurrentWeaponType == WeaponType.GunnerType) {
             //this for aimcamera
-            // moveDirectionRelativeToCamera = Quaternion.Euler(0, _mainCamera.transform.eulerAngles.y, 0) * direction;
             float adjustedCameraAngle = Mathf.Repeat(_mainCamera.transform.eulerAngles.y, 360f);
             moveDirectionRelativeToCamera = Quaternion.Euler(0, adjustedCameraAngle, 0) * direction;
             moveSpeed = 2.5f;
@@ -44,6 +48,21 @@ public class PlayerMove : Player
         moveDirectionRelativeToCamera.y = 0f;
         Vector3 currentPlayerHorizontalVelocity = GetPlayerHorizontalVelocity();
         _rigidbody.AddForce(moveDirectionRelativeToCamera * moveSpeed - currentPlayerHorizontalVelocity, ForceMode.VelocityChange);
+    }
+
+    private void Rotate(Vector3 direction)
+    {
+        if (direction.magnitude >= 0.1f)
+        {
+            angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
+            float smoothRotate = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref currentVelocity,
+            smoothRotationTime);
+            smoothRotate = Mathf.Repeat(smoothRotate, 360f);
+            if (attackAction.ReadValue<float>() == 0f && _weaponManager.CurrentWeaponType == WeaponType.GunnerType) 
+            {
+                transform.rotation = Quaternion.Euler(0, smoothRotate, 0);
+            }
+        }
     }
 
     private Vector3 GetPlayerHorizontalVelocity() {
