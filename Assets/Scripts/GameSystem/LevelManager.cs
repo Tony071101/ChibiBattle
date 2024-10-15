@@ -34,7 +34,7 @@ public class LevelManager : MonoBehaviour
 
     private IEnumerator HandleLevelCompletion(int level)
     {
-        int maxLevel = 5;
+        int maxLevel = GameManager.Instance.currentGameMode == GameMode.EndlessGameMode ? int.MaxValue : 5;
         if(level < maxLevel) {
             yield return StartCoroutine(UIManager.Instance.ShowGameLevel(level + 1));
             enemySpawner.StartLevel(level + 1);

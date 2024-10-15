@@ -8,15 +8,23 @@ using Unity.Mathematics;
 
 public class PlayerAttack : Player
 {
-    [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
-    [SerializeField] private CinemachineVirtualCamera playerCamera;
-    [SerializeField] private Transform bullet_Prefs;
+    [HideInInspector] [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
+    [HideInInspector] [SerializeField] private CinemachineVirtualCamera playerCamera;
+    [HideInInspector] [SerializeField] private Transform bullet_Prefs;
+    [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
     private Transform spawnBulletPos;
     private float lastSpawnTime = 0f;
+    private int currentAmmo = 30;
+    private int totalAmmo = 90;
     private float bulletSpawnDelay = 0.3f; //can be modified.
     private float reloadTime = 1.8f;
+    private Vector2 previousInput = Vector2.zero;
     private bool isAiming = false;
+    private Vector3 mouseWorldPosition;
+    private float smoothingFactor = 0.1f;
+    private float rotateSpeed = 5f;
     private bool playerRotatedToCamera = false;
+    private bool playerCanAim = true;
     private bool _isReloading = false;
     private bool IsReloading {
         get { return _isReloading; }
@@ -36,8 +44,10 @@ public class PlayerAttack : Player
             spawnBulletPos = spawnBulletObj.transform;
         }
     }
-    protected override void Update() {}
+    protected override void Update() {
+    }
     protected override void FixedUpdate() {
+        base.FixedUpdate();
         OnAttack();
         OnReload();
         if (isAiming && !playerRotatedToCamera) {
@@ -46,14 +56,19 @@ public class PlayerAttack : Player
         }
     }
     private void HandleAim() {
+        if (aimVirtualCamera == null)
+        {
+            Debug.LogError("aimVirtualCamera is not assigned!");
+            return;
+        }
         if(attackAction.ReadValue<float>() != 0f) {
-            //Lúc được lúc không.
             if(!isAiming) {
                 aimVirtualCamera.gameObject.SetActive(true);
                 isAiming = true;
                 playerRotatedToCamera = false;
             }
-            RotateCameraWhenAiming(cameraLookAction.ReadValue<Vector2>());
+            Vector2 adjustedLookInput = GetAdjustedLookInput();
+            RotateCameraWhenAiming(adjustedLookInput);
             _anim.SetLayerWeight(1, Mathf.Lerp(_anim.GetLayerWeight(1), 1f, Time.deltaTime * 10f));
         } else {
             aimVirtualCamera.gameObject.SetActive(false);
@@ -121,6 +136,46 @@ public class PlayerAttack : Player
         float playerCameraYRotation = playerCamera.transform.rotation.eulerAngles.y;
         float adjustedYRotation = Mathf.Repeat(playerCameraYRotation, 360f);
         transform.rotation = Quaternion.Euler(currentRotation.x, adjustedYRotation, currentRotation.z);
+    }
+
+    private void RotateCameraWhenAiming(Vector2 direction)
+    {
+        if (direction.magnitude >= 0.1f)
+        {
+            float mouseX = direction.x;
+            float mouseY = direction.y;
+            float adjustedYaw = Mathf.Repeat(_mainCamera.transform.eulerAngles.y + mouseX, 360f);
+            float currentPitch = _mainCamera.transform.eulerAngles.x;
+            if (currentPitch > 180f) currentPitch -= 360f;
+            float adjustedPitch = Mathf.Clamp(currentPitch - mouseY, -5f, 10f);
+            Quaternion targetRotation = Quaternion.Euler(adjustedPitch, adjustedYaw, 0f);
+            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.unscaledDeltaTime * rotateSpeed);
+        }
+    }
+
+    private Vector2 GetAdjustedLookInput()
+    {
+        Vector2 lookInput = cameraLookAction.ReadValue<Vector2>();
+        
+        lookInput.x *= xSensitivity;
+        lookInput.y *= ySensitivity;
+
+        if(mouseSmoothing != 0) {
+            lookInput.x = Mathf.Lerp(previousInput.x, lookInput.x, mouseSmoothing * smoothingFactor);
+            lookInput.y = Mathf.Lerp(previousInput.y, lookInput.y, mouseSmoothing * smoothingFactor);
+            previousInput = lookInput;
+        }
+
+        return lookInput;
+    }
+
+    private void CheckMouseOnWorldSpace() {
+        mouseWorldPosition = Vector3.zero;
+        Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
+        Ray ray = _mainCamera.ScreenPointToRay(screenCenterPoint);
+        if(Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask)) {
+            mouseWorldPosition = raycastHit.point;
+        }
     }
 
     public int GetTotalAmmo() { return totalAmmo; }
