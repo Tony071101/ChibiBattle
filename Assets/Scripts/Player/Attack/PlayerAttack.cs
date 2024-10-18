@@ -24,7 +24,6 @@ public class PlayerAttack : Player
     private float smoothingFactor = 0.1f;
     private float rotateSpeed = 5f;
     private bool playerRotatedToCamera = false;
-    private bool playerCanAim = true;
     private bool _isReloading = false;
     private bool IsReloading {
         get { return _isReloading; }

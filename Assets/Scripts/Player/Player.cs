@@ -28,7 +28,7 @@ public class Player : MonoBehaviour
     protected float xSensitivity;
     protected float ySensitivity;
     protected float mouseSmoothing;
-    private bool isDead = false;
+    private bool isDead;
     #region Basic Functions
     protected virtual void Awake() {
     }
@@ -39,7 +39,6 @@ public class Player : MonoBehaviour
         _playerInput = GetComponent<PlayerInput>();
         _anim = GetComponentInChildren<Animator>();
         _weaponManager = GetComponentInChildren<WeaponManager>();
-        DisablePlayerInput();
 
         healthManagementSystem = GetComponentInChildren<HealthManagementSystem>();
 
@@ -50,6 +49,7 @@ public class Player : MonoBehaviour
 
         UISettingsManager.SettingsUpdated += UpdatePlayerSettingsFromScene;
 
+        DisablePlayerInput();
         UpdatePlayerSettings();
     }
     protected virtual void Update() { 
@@ -100,7 +100,7 @@ public class Player : MonoBehaviour
 
     private void PlayerDeath()
     {
-        if (healthManagementSystem != null && healthManagementSystem.currentHealth <= 0 && !isDead)
+        if (healthManagementSystem != null && healthManagementSystem.currentHealth <= 0 && isDead == false)
         {
             DisablePlayerActions();
             StartCoroutine(WaitForDeathAnim());
