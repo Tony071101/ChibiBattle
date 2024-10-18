@@ -10,8 +10,7 @@ public class HealthManagementSystem : MonoBehaviour
     public int currentHealth { get; private set; }
     [SerializeField] private int maxHealth;
     public event EventHandler OnDeath;
-
-    private void Start() {
+    private void Awake() {
         currentHealth = maxHealth;
     }
 
@@ -32,7 +31,6 @@ public class HealthManagementSystem : MonoBehaviour
         currentHealth += amount;
     }
 
-    //This might be use in the future.
     public void Heal(int amount) {
         currentHealth += amount;
         if (currentHealth > maxHealth) {

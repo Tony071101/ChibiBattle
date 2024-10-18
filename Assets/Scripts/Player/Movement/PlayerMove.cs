@@ -58,7 +58,7 @@ public class PlayerMove : Player
             float smoothRotate = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref currentVelocity,
             smoothRotationTime);
             smoothRotate = Mathf.Repeat(smoothRotate, 360f);
-            if (attackAction.ReadValue<float>() == 0f && _weaponManager.CurrentWeaponType == WeaponType.GunnerType) 
+            if (attackAction.ReadValue<float>() == 0f) 
             {
                 transform.rotation = Quaternion.Euler(0, smoothRotate, 0);
             }

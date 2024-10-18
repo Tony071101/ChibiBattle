@@ -64,6 +64,9 @@ namespace SlimUI.ModernMenu{
         [Tooltip("Highlight Image for when GENERAL Sub-Tab is selected in KEY BINDINGS")]
         public GameObject lineGeneral;
 
+		[Header("CHARACTER SELECTION SCREEN")]
+		[SerializeField] private GameObject canv_CharacterSelection;
+
         [Header("LOADING SCREEN")]
 		[Tooltip("If this is true, the loaded scene won't load until receiving user input")]
 		public bool waitForInput = true;
@@ -266,7 +269,7 @@ namespace SlimUI.ModernMenu{
 		IEnumerator LoadAsynchronously(string sceneName){ // scene name is just the name of the current scene being loaded
 			AsyncOperation operation = SceneManager.LoadSceneAsync(sceneName);
 			operation.allowSceneActivation = false;
-			mainCanvas.SetActive(false);
+			canv_CharacterSelection.SetActive(false);
 			loadingMenu.SetActive(true);
 
 			while (!operation.isDone){
@@ -290,12 +293,18 @@ namespace SlimUI.ModernMenu{
 
 		public void OnNormalModeBtnClicked(string sceneName) {
 			PlayerPrefs.SetInt("GameMode", (int)GameMode.NormalGameMode);
-    		LoadScene(sceneName);
+			mainCanvas.SetActive(false);
+    		ShowCharacterSelectionMenu();
 		}
 
 		public void OnEndlessModeBtnClicked(string sceneName) {
 			PlayerPrefs.SetInt("GameMode", (int)GameMode.EndlessGameMode);
-    		LoadScene(sceneName);
+			mainCanvas.SetActive(false);
+    		ShowCharacterSelectionMenu();
+		}
+
+		private void ShowCharacterSelectionMenu() {
+			canv_CharacterSelection.SetActive(true);
 		}
 
 		public void ResetBinding() {

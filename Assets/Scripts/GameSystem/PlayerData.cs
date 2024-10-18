@@ -5,5 +5,7 @@ using UnityEngine;
 [CreateAssetMenu(fileName =  "New Player Data", menuName = "Sciptable Ojects/Player Data")]
 public class PlayerData : ScriptableObject
 {
-    public int totalCoin;
+    public string characterName;
+    public Sprite characterSprite;
+    public GameObject characterModel;
 }

@@ -10,6 +10,9 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: c9b6f0fd7164b094eb4d6d3d5806c46a, type: 3}
-  m_Name: PlayerData
+  m_Name: Character_Unity
   m_EditorClassIdentifier: 
-  totalCoin: 0
+  characterName: Unity
+  characterSprite: {fileID: 21300000, guid: 94acbc00f989983469c3dbe2334188ea, type: 3}
+  characterModel: {fileID: 1484624211149584966, guid: 2bb53f6c1df8ce84dbb0b9a01c4ab691,
+    type: 3}

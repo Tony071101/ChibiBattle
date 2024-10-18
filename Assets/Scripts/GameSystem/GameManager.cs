@@ -16,9 +16,11 @@ public class GameManager : MonoBehaviour
     private int currentLevel;
     private int maxLevel = 5;
     [SerializeField] private LevelManager levelManager;
-    [SerializeField] private PlayerData playerData;
     [SerializeField] private InputActionAsset resetInput;
     [SerializeField] private InputActionReference pauseAction;
+    [SerializeField] private List<PlayerData> playerDatas = new List<PlayerData>();
+    private GameObject selectedCharacterModel;
+    private const string TotalCoinKey = "TotalCoin";
     public bool isSettingOpen { get; set; } = false;
 
     private void Awake() {
@@ -28,10 +30,8 @@ public class GameManager : MonoBehaviour
         else {
             Instance = this;
         }
-
         int gameModeValue = PlayerPrefs.GetInt("GameMode", (int)GameMode.NormalGameMode);
         currentGameMode = (GameMode)gameModeValue;
-        Debug.Log("Current Game Mode: " + currentGameMode.ToString());
     }
 
     private void Start()
@@ -40,10 +40,10 @@ public class GameManager : MonoBehaviour
         {
             maxLevel = int.MaxValue;
         }
-
         ChangeState(GameState.StartGame);
         enemySpawner = FindObjectOfType<EnemySpawner>();
         player = FindObjectOfType<Player>();
+        LoadSelectedCharacter();
     }
 
     private void OnEnable() {
@@ -60,7 +60,6 @@ public class GameManager : MonoBehaviour
     {
         CurrentState = newState;
         HandleGameStateChanged(newState);
-        Debug.Log(CurrentState);
     }
 
     private void HandleGameStateChanged(GameState newState)
@@ -68,7 +67,6 @@ public class GameManager : MonoBehaviour
         switch (newState)
         {
             case GameState.MainMenu:
-                
                 break;
             case GameState.StartGame:
                 // Start the game
@@ -157,7 +155,10 @@ public class GameManager : MonoBehaviour
 
     private void UpdateCoinCurrencyInPlayerData() {
         if(player != null) {
-            playerData.totalCoin += player.GetCoinCurrency();
+            int currentTotalCoin = PlayerPrefs.GetInt(TotalCoinKey, 0);
+            int newTotalCoin = currentTotalCoin + player.GetCoinCurrency();
+            PlayerPrefs.SetInt(TotalCoinKey, newTotalCoin);
+            PlayerPrefs.Save();
         }
     }
     
@@ -166,5 +167,17 @@ public class GameManager : MonoBehaviour
             map.RemoveAllBindingOverrides();
         }
         PlayerPrefs.DeleteKey("rebinds");
+    }
+
+    private void LoadSelectedCharacter() {
+        string selectedCharacterName = PlayerPrefs.GetString("SelectedCharacter");
+
+        PlayerData selectedPlayer = playerDatas.Find(player => player.characterName == selectedCharacterName);
+
+        if(selectedPlayer != null) {
+            selectedCharacterModel = Instantiate(selectedPlayer.characterModel, player.transform.position, Quaternion.identity, player.transform);
+        } else {
+            Debug.LogError("Can't dinf selected character!");
+        }
     }
 }
