@@ -19,10 +19,11 @@ public class GameManager : MonoBehaviour
     [SerializeField] private InputActionAsset resetInput;
     [SerializeField] private InputActionReference pauseAction;
     [SerializeField] private List<PlayerData> playerDatas = new List<PlayerData>();
+    [SerializeField] private AudioSource audioSource;
     private GameObject selectedCharacterModel;
     private const string TotalCoinKey = "TotalCoin";
     public bool isSettingOpen { get; set; } = false;
-
+    private PlayerData selectedPlayer;
     private void Awake() {
         if(Instance != null) {
             Destroy(gameObject);
@@ -172,12 +173,42 @@ public class GameManager : MonoBehaviour
     private void LoadSelectedCharacter() {
         string selectedCharacterName = PlayerPrefs.GetString("SelectedCharacter");
 
-        PlayerData selectedPlayer = playerDatas.Find(player => player.characterName == selectedCharacterName);
+        selectedPlayer = playerDatas.Find(player => player.characterName == selectedCharacterName);
 
         if(selectedPlayer != null) {
             selectedCharacterModel = Instantiate(selectedPlayer.characterModel, player.transform.position, Quaternion.identity, player.transform);
+            audioSource.clip = selectedPlayer.onGameStart;
+            audioSource.Play();
         } else {
             Debug.LogError("Can't dinf selected character!");
         }
+    }
+
+    public void AudioOnMove() {
+        if(selectedPlayer != null && selectedPlayer.onMove != null) {
+            audioSource.clip = selectedPlayer.onMove;
+            ResetVolume();
+            audioSource.Play();
+        }
+    }
+
+    public void AudioOnHurt() {
+        if(selectedPlayer != null && selectedPlayer.onHurt != null) {
+            audioSource.clip = selectedPlayer.onHurt;
+            ResetVolume();
+            audioSource.Play();
+        }
+    }
+
+    public void AudioAttackSFX() {
+        if(selectedPlayer != null && selectedPlayer.attackSFX != null) {
+            audioSource.clip = selectedPlayer.attackSFX;
+            audioSource.volume = 0.2f;
+            audioSource.Play();
+        }
+    }
+
+    private void ResetVolume() {
+        audioSource.volume = 1f;
     }
 }

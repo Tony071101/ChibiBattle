@@ -8,4 +8,15 @@ public class PlayerData : ScriptableObject
     public string characterName;
     public Sprite characterSprite;
     public GameObject characterModel;
+
+    [Header("Character Voice Lines")]
+    public AudioClip onLobby;
+    public AudioClip onMove;
+    public AudioClip onHurt;
+    public AudioClip onGameStart;
+    public AudioClip onVictory;
+
+    [Header("Character SFX")]
+    public AudioClip attackSFX;
+    public AudioClip impactSFX;
 }

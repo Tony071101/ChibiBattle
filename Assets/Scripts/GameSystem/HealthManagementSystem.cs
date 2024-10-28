@@ -18,11 +18,15 @@ public class HealthManagementSystem : MonoBehaviour
         if (currentHealth > 0) {
             currentHealth -= damage;
 
+            Player player = GetComponentInParent<Player>();
+            if (player != null) {
+                GameManager.Instance.AudioOnHurt();
+            }
+
             if (currentHealth <= 0) {
                 currentHealth = 0;
                 OnDeath?.Invoke(this, EventArgs.Empty);
             }
-        } else {
         }
     }
 
