@@ -18,10 +18,14 @@ public class PlayerMove : Player
             _anim.SetBool(AnimationStrings.isMoving, value);
         }
     }
+    private bool wasMoving = false;
     protected override void Awake() {}
     protected override void Start() { base.Start(); }
     protected override void Update() {
-        
+        if (IsMoving && !wasMoving) {
+            GameManager.Instance.AudioOnMove();
+        }
+        wasMoving = IsMoving;
     }
     protected override void FixedUpdate()
     {

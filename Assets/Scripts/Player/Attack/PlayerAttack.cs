@@ -90,11 +90,13 @@ public class PlayerAttack : Player
                     if(currentAmmo == 0) {
                         StartCoroutine(Reload());
                     }
+                    GameManager.Instance.AudioAttackSFX();
                 }
             }
         } else if(_weaponManager.CurrentWeaponType == WeaponType.MeleeType) {
             if(attackAction.ReadValue<float>() != 0f){
                 _anim.SetTrigger(AnimationStrings.performAttack);
+                GameManager.Instance.AudioAttackSFX();
             }
         }
     }
