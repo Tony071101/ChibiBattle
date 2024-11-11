@@ -51,6 +51,10 @@ public class Player : MonoBehaviour
 
         DisablePlayerInput();
         UpdatePlayerSettings();
+
+        if (healthManagementSystem != null) {
+            healthManagementSystem.InitializeHealth(GameManager.Instance.GetCharacterBaseHealth());
+        }
     }
     protected virtual void Update() { 
         PlayerDeath(); 

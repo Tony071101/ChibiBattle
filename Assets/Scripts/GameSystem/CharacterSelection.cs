@@ -6,32 +6,37 @@ using UnityEngine.UI;
 
 public class CharacterSelection : MonoBehaviour
 {
-    [SerializeField] private List<PlayerData> playerDatas = new List<PlayerData>();
+    private List<CharacterData> characterDatas = new List<CharacterData>();
     [SerializeField] private GameObject btnPrefab;
     [SerializeField] private Transform btnParent;
     [SerializeField] private Transform modelDisplay;
+    [SerializeField] private TextMeshProUGUI characterNameText;
+    [SerializeField] private TextMeshProUGUI characterDescriptionText;
     [SerializeField] private GameObject btnPlay;
     [SerializeField] private AudioSource audioSource;
     private GameObject currentModel;
 
     private void Start() {
+        LoadCharacterDatas();
         GenerateCharacterButtons();
         btnPlay.SetActive(false);
     }
+    
+    private void LoadCharacterDatas()
+    {
+        CharacterData[] loadedCharacterDatas = Resources.LoadAll<CharacterData>("CharacterDatas");
+        characterDatas.AddRange(loadedCharacterDatas);
+    }
 
     private void GenerateCharacterButtons() {
-        foreach (PlayerData player in playerDatas) {
+        foreach (CharacterData character in characterDatas) {
             GameObject newBtn = Instantiate(btnPrefab, btnParent);
-            newBtn.GetComponentInChildren<Image>().sprite = player.characterSprite;
-            TextMeshProUGUI btnText = newBtn.GetComponentInChildren<TextMeshProUGUI>();
-            if (btnText != null) {
-                btnText.text = player.characterName;
-            }
-            newBtn.GetComponent<Button>().onClick.AddListener(() => SelectCharacter(player));
+            newBtn.GetComponentInChildren<Image>().sprite = character.characterSprite;
+            newBtn.GetComponent<Button>().onClick.AddListener(() => SelectCharacter(character));
         }
     }
 
-    private void SelectCharacter(PlayerData player) {
+    private void SelectCharacter(CharacterData character) {
         if(currentModel != null) {
             Destroy(currentModel);
             if(audioSource.isPlaying) {
@@ -39,15 +44,17 @@ public class CharacterSelection : MonoBehaviour
             }
         }
         Quaternion rotation = Quaternion.Euler(0, 180, 0);
-        currentModel = Instantiate(player.characterModel, modelDisplay.position, rotation, modelDisplay);
+        currentModel = Instantiate(character.characterModel, modelDisplay.position, rotation, modelDisplay);
 
+        characterNameText.text = character.characterName;
+        characterDescriptionText.text = character.characterDescription;
 
-        PlayerPrefs.SetString("SelectedCharacter", player.characterName);
+        PlayerPrefs.SetString("SelectedCharacter", character.characterName);
         PlayerPrefs.Save();
         btnPlay.SetActive(true);
 
-        if (player.onLobby != null) {
-            audioSource.clip = player.onLobby;
+        if (character.onLobby != null) {
+            audioSource.clip = character.onLobby;
             audioSource.Play();
         }
     }

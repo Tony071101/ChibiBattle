@@ -8,9 +8,11 @@ using UnityEngine.Events;
 public class HealthManagementSystem : MonoBehaviour
 {
     public int currentHealth { get; private set; }
-    [SerializeField] private int maxHealth;
+    private int maxHealth;
     public event EventHandler OnDeath;
-    private void Awake() {
+
+    public void InitializeHealth(int baseHealth) {
+        maxHealth = baseHealth;
         currentHealth = maxHealth;
     }
 

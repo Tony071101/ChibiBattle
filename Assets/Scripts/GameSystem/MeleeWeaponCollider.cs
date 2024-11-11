@@ -4,12 +4,16 @@ using UnityEngine;
 
 public class MeleeWeaponCollider : MonoBehaviour
 {
-    [SerializeField] private int meleeDamage; //This will be modified to add more elements like levels, upgrade,...
+    private int damage;
+
+    public void SetDamage(int damageAmount) {
+        damage = damageAmount;
+    }
+
     private void OnTriggerEnter(Collider other) {
         HealthManagementSystem _healthManagement = other.gameObject.GetComponent<HealthManagementSystem>();
         if(_healthManagement != null) {
-            int totalDamage = meleeDamage + Mathf.RoundToInt(CharacterProgression.Instance.bonusDamage);
-            _healthManagement.DamageDealt(totalDamage);
+            _healthManagement.DamageDealt(damage);
         }
     }
 }

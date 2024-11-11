@@ -364,7 +364,7 @@ NavMeshAgent:
   m_Acceleration: 17
   avoidancePriority: 50
   m_AngularSpeed: 500
-  m_StoppingDistance: 1.7
+  m_StoppingDistance: 1.5
   m_AutoTraverseOffMeshLink: 1
   m_AutoBraking: 1
   m_AutoRepath: 1
@@ -384,7 +384,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: efc4d9c17119a354ebb6940feff4a2e8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  maxHealth: 100
 --- !u!114 &9107246140123859343
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -656,7 +655,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75c0414ca8677794fbdbaffc6b480482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleeDamage: 10
 --- !u!1 &1048464299522117373
 GameObject:
   m_ObjectHideFlags: 0
@@ -3441,7 +3439,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 75c0414ca8677794fbdbaffc6b480482, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  meleeDamage: 10
 --- !u!1 &4905667823795718632
 GameObject:
   m_ObjectHideFlags: 0

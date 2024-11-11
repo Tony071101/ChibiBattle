@@ -11,7 +11,9 @@ public class PlayerAttack : Player
     [HideInInspector] [SerializeField] private CinemachineVirtualCamera aimVirtualCamera;
     [HideInInspector] [SerializeField] private CinemachineVirtualCamera playerCamera;
     [HideInInspector] [SerializeField] private Transform bullet_Prefs;
-    [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
+    [HideInInspector] [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
+    private int attackDamage;
+    private MeleeWeaponCollider meleeWeaponCollider;
     private Transform spawnBulletPos;
     private float lastSpawnTime = 0f;
     private int currentAmmo = 30;
@@ -24,6 +26,7 @@ public class PlayerAttack : Player
     private float smoothingFactor = 0.1f;
     private float rotateSpeed = 5f;
     private bool playerRotatedToCamera = false;
+    private Coroutine resetDamageCoroutine;
     private bool _isReloading = false;
     private bool IsReloading {
         get { return _isReloading; }
@@ -37,10 +40,13 @@ public class PlayerAttack : Player
     protected override void Start() {
         base.Start();
 
+        attackDamage = GameManager.Instance.GetCharacterBaseDamage();
         _weaponManager = GetComponentInChildren<WeaponManager>();
         if(_weaponManager.CurrentWeaponType == WeaponType.GunnerType) {
             GameObject spawnBulletObj = GameObject.FindGameObjectWithTag("SpawnBulletPos");
             spawnBulletPos = spawnBulletObj.transform;
+        } else if (_weaponManager.CurrentWeaponType == WeaponType.MeleeType) {
+            meleeWeaponCollider = GetComponentInChildren<MeleeWeaponCollider>();
         }
     }
     protected override void Update() {
@@ -84,7 +90,13 @@ public class PlayerAttack : Player
                 if(currentAmmo > 0) {
                     CheckMouseOnWorldSpace();
                     Vector3 aimDir = (mouseWorldPosition - spawnBulletPos.position).normalized;
-                    Instantiate(bullet_Prefs, spawnBulletPos.position, Quaternion.LookRotation(aimDir, Vector3.up));
+
+                    //Calculate the damage and spawn bullet
+                    int totalDamage = attackDamage + Mathf.RoundToInt(CharacterProgression.Instance.bonusDamage);
+                    Transform bullet = Instantiate(bullet_Prefs, spawnBulletPos.position, Quaternion.LookRotation(aimDir, Vector3.up));
+                    BulletProjectile bulletProjectile = bullet.GetComponent<BulletProjectile>();
+                    bulletProjectile.SetDamage(totalDamage);
+                    //
                     lastSpawnTime = Time.time;
                     currentAmmo--;
                     if(currentAmmo == 0) {
@@ -94,11 +106,23 @@ public class PlayerAttack : Player
                 }
             }
         } else if(_weaponManager.CurrentWeaponType == WeaponType.MeleeType) {
-            if(attackAction.ReadValue<float>() != 0f){
+            if(attackAction.WasPressedThisFrame()){
+                int totalDamage = attackDamage + Mathf.RoundToInt(CharacterProgression.Instance.bonusDamage);
+                meleeWeaponCollider.SetDamage(totalDamage);
                 _anim.SetTrigger(AnimationStrings.performAttack);
                 GameManager.Instance.AudioAttackSFX();
+                if (resetDamageCoroutine != null) {
+                    StopCoroutine(resetDamageCoroutine);
+                }
+                // Bắt đầu một coroutine mới để reset damage
+                resetDamageCoroutine = StartCoroutine(ResetDamageAfterDelay(0.5f));
             }
         }
+    }
+
+    private IEnumerator ResetDamageAfterDelay(float delay) {
+        yield return new WaitForSeconds(delay);
+        meleeWeaponCollider.SetDamage(0);
     }
 
     protected override void OnReload()

@@ -12,8 +12,14 @@ public class EnemySpawner : MonoBehaviour
     private int initialEnemyCount = 5;
     private float spawnRangeX = 190f;
     private float spawnRangeZ = 190f;
+    private WeaponManager playerWeaponManager;
     public int currentWave { get; private set; }
     private List<GameObject> enemies = new List<GameObject>();
+
+    private void Start() {
+        Player player = FindObjectOfType<Player>();
+        playerWeaponManager = player.GetComponentInChildren<WeaponManager>();
+    }
 
     public void StartLevel(int level)
     {
@@ -70,7 +76,9 @@ public class EnemySpawner : MonoBehaviour
         DropCoinCurrency(new Vector3(enemy.transform.position.x, 
                                         enemy.transform.position.y + 0.1f, 
                                             enemy.transform.position.z + 0.1f));
-        DropBulletPack(enemy.transform.position);
+        if (playerWeaponManager.CurrentWeaponType != WeaponType.MeleeType) {
+            DropBulletPack(enemy.transform.position);
+        }
         CharacterProgression.Instance.AddExperience();
     }
 

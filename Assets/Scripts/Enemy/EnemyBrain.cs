@@ -26,7 +26,7 @@ public class EnemyBrain : MonoBehaviour
 
     private void Update()
     {
-        enemyReferences.worldspaceHealthBar.UpdateHealthBar(enemyReferences.healthManagementSystem.currentHealth, enemyReferences.healthManagementSystem.GetMaxHealth());
+        enemyReferences.worldspaceHealthBar.UpdateHealthBar(enemyReferences.healthManagementSystem.currentHealth, enemyReferences.enemyMaxHealth);
         if (enemyReferences.healthManagementSystem.currentHealth > 0)
         {
             TargetInSight();
@@ -48,6 +48,8 @@ public class EnemyBrain : MonoBehaviour
             if (inRange)
             {
                 LookAtTarget();
+
+                enemyReferences.meleeWeaponCollider.SetDamage(enemyReferences.GetAttackDamage());
             }
             else
             {

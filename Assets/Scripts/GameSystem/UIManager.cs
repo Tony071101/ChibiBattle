@@ -59,6 +59,8 @@ public class UIManager : MonoBehaviour
     private GameObject healthBtn;
     private GameObject damageBtn;
     private GameObject healBtn;
+    private bool isAmmoVisible;
+    private WeaponManager playerWeaponManager;
     public static UIManager Instance { get; private set; }
     private void Awake() {
         if(Instance != null) {
@@ -69,20 +71,25 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    private void Start() {
+    private void Start()
+    {
         characterProgression = CharacterProgression.Instance;
         player = FindObjectOfType<Player>();
         enemySpawner = FindObjectOfType<EnemySpawner>();
+        playerWeaponManager = player.GetComponentInChildren<WeaponManager>();
+        CheckWeaponType();
     }
 
-    //Change this not to use uppdate.
+
     private void Update() {
         if(player != null) {
             GetPlayerHealth();
-            GetPlayerAmmo();
             GetPlayerCoin();
             GetPlayerLevel();
             HealthBarLerp();
+            if(isAmmoVisible) {
+                GetPlayerAmmo();
+            }
         }
     }
 
@@ -156,6 +163,20 @@ public class UIManager : MonoBehaviour
         playerAmmoTxt.text = playerAttack.GetCurrentAmmno() + "/" + playerAttack.GetTotalAmmo();
     }
 
+    private void CheckWeaponType()
+    {
+        if (playerWeaponManager.CurrentWeaponType == WeaponType.MeleeType)
+        {
+            playerAmmoTxt.enabled = false;
+            isAmmoVisible = false;
+        }
+        else
+        {
+            playerAmmoTxt.enabled = true; 
+            isAmmoVisible = true;
+        }
+    }
+
     public void GetPlayerCoin() {
         playerCoinTxt.text = "Coin: " + player.GetCoinCurrency();
     }
@@ -191,6 +212,7 @@ public class UIManager : MonoBehaviour
                 player.ApplyBonusHealth();
                 OnButtonClicked();
                 Destroy(healthBtn);
+                Destroy(damageBtn);
             },
             startPos + new Vector2(-btnSpacing, 0));
         }
@@ -202,6 +224,7 @@ public class UIManager : MonoBehaviour
                     characterProgression.OnLevelUpDamage();
                     OnButtonClicked();
                     Destroy(damageBtn);
+                    Destroy(healthBtn);
                 },
                 startPos + new Vector2(btnSpacing, 0));
         }

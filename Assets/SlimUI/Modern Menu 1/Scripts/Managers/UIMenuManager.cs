@@ -313,5 +313,10 @@ namespace SlimUI.ModernMenu{
 			}
 			PlayerPrefs.DeleteKey("rebinds");
 		}
+
+		public void ReturnMenuFromCharacterSelection() {
+			mainCanvas.SetActive(true);
+			canv_CharacterSelection.SetActive(false);
+		}
 	}
 }
