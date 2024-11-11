@@ -18,12 +18,12 @@ public class GameManager : MonoBehaviour
     [SerializeField] private LevelManager levelManager;
     [SerializeField] private InputActionAsset resetInput;
     [SerializeField] private InputActionReference pauseAction;
-    [SerializeField] private List<PlayerData> playerDatas = new List<PlayerData>();
+    private List<CharacterData> characterDatas = new List<CharacterData>();
     [SerializeField] private AudioSource audioSource;
     private GameObject selectedCharacterModel;
     private const string TotalCoinKey = "TotalCoin";
     public bool isSettingOpen { get; set; } = false;
-    private PlayerData selectedPlayer;
+    private CharacterData selectedCharacter;
     private void Awake() {
         if(Instance != null) {
             Destroy(gameObject);
@@ -33,6 +33,7 @@ public class GameManager : MonoBehaviour
         }
         int gameModeValue = PlayerPrefs.GetInt("GameMode", (int)GameMode.NormalGameMode);
         currentGameMode = (GameMode)gameModeValue;
+        LoadCharacterDatas();
     }
 
     private void Start()
@@ -45,6 +46,7 @@ public class GameManager : MonoBehaviour
         enemySpawner = FindObjectOfType<EnemySpawner>();
         player = FindObjectOfType<Player>();
         LoadSelectedCharacter();
+        audioSource.volume = PlayerPrefs.GetFloat("CharacterVolume");
     }
 
     private void OnEnable() {
@@ -141,6 +143,10 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    public void UpdateVolume (){
+        audioSource.volume = PlayerPrefs.GetFloat("CharacterVolume");
+    }
+
     public void PlayerLevelUp() {
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
@@ -170,45 +176,60 @@ public class GameManager : MonoBehaviour
         PlayerPrefs.DeleteKey("rebinds");
     }
 
+    private void LoadCharacterDatas()
+    {
+        CharacterData[] loadedCharacterDatas = Resources.LoadAll<CharacterData>("CharacterDatas");
+        characterDatas.AddRange(loadedCharacterDatas);
+    }
+
     private void LoadSelectedCharacter() {
         string selectedCharacterName = PlayerPrefs.GetString("SelectedCharacter");
+        selectedCharacter = characterDatas.Find(character => character.characterName == selectedCharacterName);
 
-        selectedPlayer = playerDatas.Find(player => player.characterName == selectedCharacterName);
-
-        if(selectedPlayer != null) {
-            selectedCharacterModel = Instantiate(selectedPlayer.characterModel, player.transform.position, Quaternion.identity, player.transform);
-            audioSource.clip = selectedPlayer.onGameStart;
+        if(selectedCharacter != null) {
+            selectedCharacterModel = Instantiate(selectedCharacter.characterModel, player.transform.position, Quaternion.identity, player.transform);
+            audioSource.clip = selectedCharacter.onGameStart;
             audioSource.Play();
         } else {
-            Debug.LogError("Can't dinf selected character!");
+            Debug.LogError("Can't find selected character!");
         }
     }
 
+    public int GetCharacterBaseDamage() {
+        if (selectedCharacter != null) {
+            return selectedCharacter.baseDamage;
+        } else {
+            return 0;
+        }
+    }
+
+    public int GetCharacterBaseHealth() {
+        if (selectedCharacter != null) {
+            return selectedCharacter.baseHealth;
+        } else {
+            return 0;
+        }
+    }
+
+
     public void AudioOnMove() {
-        if(selectedPlayer != null && selectedPlayer.onMove != null) {
-            audioSource.clip = selectedPlayer.onMove;
-            ResetVolume();
+        if(selectedCharacter != null && selectedCharacter.onMove != null) {
+            audioSource.clip = selectedCharacter.onMove;
             audioSource.Play();
         }
     }
 
     public void AudioOnHurt() {
-        if(selectedPlayer != null && selectedPlayer.onHurt != null) {
-            audioSource.clip = selectedPlayer.onHurt;
-            ResetVolume();
+        if(selectedCharacter != null && selectedCharacter.onHurt != null) {
+            audioSource.clip = selectedCharacter.onHurt;
             audioSource.Play();
         }
     }
 
     public void AudioAttackSFX() {
-        if(selectedPlayer != null && selectedPlayer.attackSFX != null) {
-            audioSource.clip = selectedPlayer.attackSFX;
-            audioSource.volume = 0.2f;
+        if(selectedCharacter != null && selectedCharacter.attackSFX != null) {
+            audioSource.clip = selectedCharacter.attackSFX;
             audioSource.Play();
         }
-    }
-
-    private void ResetVolume() {
-        audioSource.volume = 1f;
     }
 }

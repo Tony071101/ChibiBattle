@@ -44,27 +44,30 @@ public class PlayerMove : Player
             //this for normal camera.
             Vector3 cameraForward = new Vector3(_mainCamera.transform.forward.x, 0, _mainCamera.transform.forward.z).normalized;
             Vector3 cameraRight = new Vector3(_mainCamera.transform.right.x, 0, _mainCamera.transform.right.z).normalized;
-            moveDirectionRelativeToCamera = (cameraForward * direction.z + cameraRight * direction.x).normalized;
+            moveDirectionRelativeToCamera = (cameraForward * direction.z + cameraRight * direction.x);
             moveSpeed = 5f;
             //Rotate Player.
             Rotate(moveDirectionRelativeToCamera);
         }
         moveDirectionRelativeToCamera.y = 0f;
-        Vector3 currentPlayerHorizontalVelocity = GetPlayerHorizontalVelocity();
-        _rigidbody.AddForce(moveDirectionRelativeToCamera * moveSpeed - currentPlayerHorizontalVelocity, ForceMode.VelocityChange);
+        if (!float.IsNaN(moveDirectionRelativeToCamera.x) && !float.IsNaN(moveDirectionRelativeToCamera.y) && !float.IsNaN(moveDirectionRelativeToCamera.z))
+        {
+            Vector3 currentPlayerHorizontalVelocity = GetPlayerHorizontalVelocity();
+            _rigidbody.AddForce(moveDirectionRelativeToCamera * moveSpeed - currentPlayerHorizontalVelocity, ForceMode.VelocityChange);
+        }
     }
 
     private void Rotate(Vector3 direction)
     {
-        if (direction.magnitude >= 0.1f)
+        if (!float.IsNaN(direction.x) && !float.IsNaN(direction.y) && !float.IsNaN(direction.z) && direction != Vector3.zero && direction.magnitude >= 0.1f)
         {
             angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            float smoothRotate = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref currentVelocity,
-            smoothRotationTime);
+            float smoothRotate = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref currentVelocity, smoothRotationTime);
             smoothRotate = Mathf.Repeat(smoothRotate, 360f);
+            
             if (attackAction.ReadValue<float>() == 0f) 
             {
-                transform.rotation = Quaternion.Euler(0, smoothRotate, 0);
+                transform.rotation = Quaternion.Euler(0, smoothRotate, 0).normalized;
             }
         }
     }
