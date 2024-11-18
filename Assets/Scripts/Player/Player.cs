@@ -4,8 +4,6 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cinemachine;
-using Unity.VisualScripting.Dependencies.Sqlite;
-using Unity.PlasticSCM.Editor.WebApi;
 using System;
 using System.Runtime.InteropServices.WindowsRuntime;
 using SlimUI.ModernMenu;
