@@ -13,6 +13,7 @@ public class PlayerAttack : Player
     [HideInInspector] [SerializeField] private Transform bullet_Prefs;
     [HideInInspector] [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
     private int attackDamage;
+    private int damageBonus;
     private MeleeWeaponCollider meleeWeaponCollider;
     private Transform spawnBulletPos;
     private float lastSpawnTime = 0f;
@@ -41,6 +42,10 @@ public class PlayerAttack : Player
         base.Start();
 
         attackDamage = GameManager.Instance.GetCharacterBaseDamage();
+        damageBonus = Mathf.RoundToInt(PlayerPrefs.GetFloat("DMGSliderValue", 0)) * 5;
+
+        attackDamage += damageBonus;
+
         _weaponManager = GetComponentInChildren<WeaponManager>();
         if(_weaponManager.CurrentWeaponType == WeaponType.GunnerType) {
             GameObject spawnBulletObj = GameObject.FindGameObjectWithTag("SpawnBulletPos");

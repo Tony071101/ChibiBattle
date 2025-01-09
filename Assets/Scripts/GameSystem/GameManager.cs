@@ -20,7 +20,6 @@ public class GameManager : MonoBehaviour
     private List<CharacterData> characterDatas = new List<CharacterData>();
     [SerializeField] private AudioSource audioSource;
     private GameObject selectedCharacterModel;
-    private const string TotalCoinKey = "TotalCoin";
     public bool isSettingOpen { get; set; } = false;
     private CharacterData selectedCharacter;
     private void Awake() {
@@ -161,9 +160,9 @@ public class GameManager : MonoBehaviour
 
     private void UpdateCoinCurrencyInPlayerData() {
         if(player != null) {
-            int currentTotalCoin = PlayerPrefs.GetInt(TotalCoinKey, 0);
+            int currentTotalCoin = PlayerPrefs.GetInt("TotalCoin", 0);
             int newTotalCoin = currentTotalCoin + player.GetCoinCurrency();
-            PlayerPrefs.SetInt(TotalCoinKey, newTotalCoin);
+            PlayerPrefs.SetInt("TotalCoin", newTotalCoin);
             PlayerPrefs.Save();
         }
     }

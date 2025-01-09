@@ -66,6 +66,8 @@ namespace SlimUI.ModernMenu{
 
 		[Header("CHARACTER SELECTION SCREEN")]
 		[SerializeField] private GameObject canv_CharacterSelection;
+		[Header("CHARACTER UPGRADE STAT SCREEN")]
+		[SerializeField] private GameObject canv_UpgradeStat;
 
         [Header("LOADING SCREEN")]
 		[Tooltip("If this is true, the loaded scene won't load until receiving user input")]
@@ -307,6 +309,11 @@ namespace SlimUI.ModernMenu{
 			canv_CharacterSelection.SetActive(true);
 		}
 
+		public void OnUpgradeStatBtnClicked() {
+			mainCanvas.SetActive(false);
+			canv_UpgradeStat.SetActive(true);
+		}
+
 		public void ResetBinding() {
 			foreach(InputActionMap map in resetInput.actionMaps) {
 				map.RemoveAllBindingOverrides();
@@ -317,6 +324,10 @@ namespace SlimUI.ModernMenu{
 		public void ReturnMenuFromCharacterSelection() {
 			mainCanvas.SetActive(true);
 			canv_CharacterSelection.SetActive(false);
+		}
+		public void ReturnMenuFromUpgradeStat() {
+			mainCanvas.SetActive(true);
+			canv_UpgradeStat.SetActive(false);
 		}
 	}
 }
