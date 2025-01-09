@@ -7,7 +7,7 @@ public class CoinCurrency : MonoBehaviour
     private void OnCollisionEnter(Collision other) {
         if(other.gameObject.CompareTag("Player")) {
             Player player = FindObjectOfType<Player>();
-            player.AddCoins(10);   
+            player.AddCoins(15);   
             Destroy(gameObject);
         }
     }

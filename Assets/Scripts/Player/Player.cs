@@ -27,6 +27,7 @@ public class Player : MonoBehaviour
     protected float ySensitivity;
     protected float mouseSmoothing;
     private bool isDead;
+    private int hpBonus;
     #region Basic Functions
     protected virtual void Awake() {
     }
@@ -50,8 +51,10 @@ public class Player : MonoBehaviour
         DisablePlayerInput();
         UpdatePlayerSettings();
 
+        hpBonus = Mathf.RoundToInt(PlayerPrefs.GetFloat("HPSliderValue", 0)) * 70;
+
         if (healthManagementSystem != null) {
-            healthManagementSystem.InitializeHealth(GameManager.Instance.GetCharacterBaseHealth());
+            healthManagementSystem.InitializeHealth(GameManager.Instance.GetCharacterBaseHealth() + hpBonus);
         }
     }
     protected virtual void Update() { 
