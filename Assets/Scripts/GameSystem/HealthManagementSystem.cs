@@ -8,24 +8,41 @@ using UnityEngine.Events;
 public class HealthManagementSystem : MonoBehaviour
 {
     public int currentHealth { get; private set; }
-    [SerializeField] private int maxHealth;
+    private int maxHealth;
     public event EventHandler OnDeath;
 
-    private void Start() {
+    public void InitializeHealth(int baseHealth) {
+        maxHealth = baseHealth;
         currentHealth = maxHealth;
     }
 
     public void DamageDealt(int damage) {
         if (currentHealth > 0) {
             currentHealth -= damage;
-            Debug.LogError(gameObject.name + " took damage, current health: " + currentHealth);
+
+            Player player = GetComponentInParent<Player>();
+            if (player != null) {
+                GameManager.Instance.AudioOnHurt();
+            }
 
             if (currentHealth <= 0) {
-                currentHealth = 0; // Ensure health doesn't drop below 0
+                currentHealth = 0;
                 OnDeath?.Invoke(this, EventArgs.Empty);
             }
-        } else {
-            Debug.Log(gameObject.name + " is already dead.");
         }
     }
+
+    public void IncreaseMaxHealth(int amount) {
+        maxHealth += amount;
+        currentHealth += amount;
+    }
+
+    public void Heal(int amount) {
+        currentHealth += amount;
+        if (currentHealth > maxHealth) {
+            currentHealth = maxHealth;
+        }
+    }
+
+    public int GetMaxHealth() { return maxHealth; }
 }

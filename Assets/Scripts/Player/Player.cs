@@ -4,7 +4,9 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Cinemachine;
-using Unity.VisualScripting.Dependencies.Sqlite;
+using System;
+using System.Runtime.InteropServices.WindowsRuntime;
+using SlimUI.ModernMenu;
 [RequireComponent(typeof(Rigidbody), typeof(PlayerInput))]
 public class Player : MonoBehaviour
 {
@@ -12,9 +14,7 @@ public class Player : MonoBehaviour
     protected Animator _anim;
     protected Camera _mainCamera;
     protected WeaponManager _weaponManager;
-    private HealthManagementSystem healthManagementSystem;
-    private PlayerMove playerMove;
-    private PlayerAttack playerAttack;
+    public HealthManagementSystem healthManagementSystem { get; private set; }
     #region InputSystem
     protected PlayerInput _playerInput;
     protected InputAction moveAction;
@@ -22,111 +22,108 @@ public class Player : MonoBehaviour
     protected InputAction cameraLookAction; 
     protected InputAction reloadAction;
     #endregion
-
-    [HideInInspector] [SerializeField] private LayerMask aimColliderLayerMask = new LayerMask();
-
-    protected Vector3 mouseWorldPosition;
-    private float angle;
-    private float currentVelocity;
-    private float smoothRotationTime = 0.05f;
-    private float rotateSpeed = 5f;
-    protected int maxAmmo = 90;
-    protected int currentAmmo = 30;
-    protected int totalAmmo;
-    protected Transform spawnBulletPos;
-    protected bool _isMoving = false;
-    protected bool IsMoving {
-        get { return _isMoving; }
-        set {
-            _isMoving = value;
-            _anim.SetBool(AnimationStrings.isMoving, value);
-        }
+    private int coinCurrency = 0;
+    protected float xSensitivity;
+    protected float ySensitivity;
+    protected float mouseSmoothing;
+    private bool isDead;
+    private int hpBonus;
+    #region Basic Functions
+    protected virtual void Awake() {
     }
-
-    protected bool _isReloading = false;
-    protected bool IsReloading {
-        get { return _isReloading; }
-        set
-        {
-            _isReloading = value;
-            _anim.SetBool(AnimationStrings.isReloading, value);
-        }
-    }
-
-    private void Awake() {
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
-    }
-
-    private void Start() {
-        _playerInput = GetComponent<PlayerInput>();
+    protected virtual void Start()
+    {
+        _mainCamera = Camera.main;
         _rigidbody = GetComponent<Rigidbody>();
-        playerMove = GetComponent<PlayerMove>();
-        playerAttack = GetComponent<PlayerAttack>();
+        _playerInput = GetComponent<PlayerInput>();
         _anim = GetComponentInChildren<Animator>();
         _weaponManager = GetComponentInChildren<WeaponManager>();
+
         healthManagementSystem = GetComponentInChildren<HealthManagementSystem>();
-        _mainCamera = Camera.main;
+
         moveAction = _playerInput.actions.FindAction("Move");
         attackAction = _playerInput.actions.FindAction("Attack");
         cameraLookAction = _playerInput.actions.FindAction("CameraLook");
         reloadAction = _playerInput.actions.FindAction("Reload");
-        totalAmmo = maxAmmo;
-        spawnBulletPos = GameObject.FindGameObjectWithTag("SpawnBulletPos").transform;
-    }
 
-    private void Update() {
-        if(healthManagementSystem != null && healthManagementSystem.currentHealth <= 0) {
-            DisablePlayerActions();
+        UISettingsManager.SettingsUpdated += UpdatePlayerSettingsFromScene;
+
+        DisablePlayerInput();
+        UpdatePlayerSettings();
+
+        hpBonus = Mathf.RoundToInt(PlayerPrefs.GetFloat("HPSliderValue", 0)) * 70;
+
+        if (healthManagementSystem != null) {
+            healthManagementSystem.InitializeHealth(GameManager.Instance.GetCharacterBaseHealth() + hpBonus);
         }
     }
-
-    private void FixedUpdate() {
-        OnMove();
-        OnAttack();
-        OnReload();
+    protected virtual void Update() { 
+        PlayerDeath(); 
     }
+    protected virtual void FixedUpdate() {}
+    #endregion
 
+    #region Children Functions
     protected virtual void OnReload(){}
     protected virtual void OnMove(){}
     protected virtual void OnAttack(){}
-    protected void Rotate(Vector3 direction)
-    {
-        if (direction.magnitude >= 0.1f)
-        {
-            angle = Mathf.Atan2(direction.x, direction.z) * Mathf.Rad2Deg;
-            float smoothRorate = Mathf.SmoothDampAngle(transform.eulerAngles.y, angle, ref currentVelocity,
-            smoothRotationTime);
-            if(attackAction.ReadValue<float>() != 0f) {
-                //This is need to be empty to lock rotation when move while aimed.
-            }else{
-                transform.rotation = Quaternion.Euler(0, smoothRorate, 0);
-            }
+    #endregion
+
+    #region Get/Set Functions
+    public void DisablePlayerInput() { 
+        if (_playerInput != null) {
+            _playerInput.enabled = false;
         }
     }
-
-    protected void RotateCameraWhenAiming(Vector2 direction)
-    {
-        if (direction.magnitude >= 0.1f)
-        {
-            float mouseX = direction.x;
-            Quaternion targetRotation = Quaternion.Euler(0f, _mainCamera.transform.eulerAngles.y + mouseX, 0f);
-            transform.rotation = Quaternion.Slerp(transform.rotation, targetRotation, Time.deltaTime * rotateSpeed);
+    public void EnablePlayerInput() { 
+        if (_playerInput != null) {
+            _playerInput.enabled = true; 
         }
     }
-
-    protected void CheckMouseOnWorldSpace() {
-        mouseWorldPosition = Vector3.zero;
-        Vector2 screenCenterPoint = new Vector2(Screen.width / 2f, Screen.height / 2f);
-        Ray ray = _mainCamera.ScreenPointToRay(screenCenterPoint);
-        if(Physics.Raycast(ray, out RaycastHit raycastHit, 999f, aimColliderLayerMask)) {
-            mouseWorldPosition = raycastHit.point;
-        }
+    public void ResetIsDead() { isDead = false; }
+    public int GetCoinCurrency() { return coinCurrency; }
+    public void SetCoinCurrency(int amount) { coinCurrency = amount; }
+    public void AddCoins(int amount) { coinCurrency += amount; }
+    #endregion
+    
+    #region Logic Functions
+    private void UpdatePlayerSettingsFromScene(object sender, EventArgs e) {
+        UpdatePlayerSettings();
+    }
+    public void UpdatePlayerSettings()
+    {
+        xSensitivity = PlayerPrefs.GetFloat("XSensitivity", 1f);
+        ySensitivity = PlayerPrefs.GetFloat("YSensitivity", 1f);
+        mouseSmoothing = PlayerPrefs.GetFloat("MouseSmoothing", 0f);
     }
 
     private void DisablePlayerActions()
     {
         _anim.SetTrigger(AnimationStrings.death);
-        if (_playerInput != null) _playerInput.enabled = false;
+        DisablePlayerInput();
     }
+
+    private void PlayerDeath()
+    {
+        if (healthManagementSystem != null && healthManagementSystem.currentHealth <= 0 && isDead == false)
+        {
+            DisablePlayerActions();
+            StartCoroutine(WaitForDeathAnim());
+            isDead = true;
+        }
+    }
+
+    private IEnumerator WaitForDeathAnim() {
+        float deathAnimLength = _anim.GetCurrentAnimatorStateInfo(0).length;
+        yield return new WaitForSeconds(deathAnimLength);
+        GameManager.Instance.ChangeState(GameManager.GameState.GameOver);
+    }
+
+    public void ApplyBonusHealth() {
+        if(healthManagementSystem != null) {
+            int additionalHealth = Mathf.RoundToInt(CharacterProgression.Instance.bonusHealth);
+            healthManagementSystem.IncreaseMaxHealth(additionalHealth);
+        }
+    }
+    #endregion
 }

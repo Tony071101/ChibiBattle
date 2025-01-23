@@ -1,0 +1,28 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c9b6f0fd7164b094eb4d6d3d5806c46a, type: 3}
+  m_Name: Character_Saori
+  m_EditorClassIdentifier: 
+  baseHealth: 300
+  baseDamage: 10
+  characterName: Saori (Blue Archive)
+  characterSprite: {fileID: 21300000, guid: ba15601e8453c814bb2b85a442062d28, type: 3}
+  characterModel: {fileID: 2806838053642119654, guid: 1163172eda759904bb19a31068f2d03d,
+    type: 3}
+  characterDescription: This character is associated with a game called Blue Archive.
+  onLobby: {fileID: 8300000, guid: 7c56ff196b41c5946934dd20f29aea03, type: 3}
+  onMove: {fileID: 8300000, guid: 1a93825ae34f19846a773c80f96ab760, type: 3}
+  onHurt: {fileID: 8300000, guid: 11d22603d197ef44a9e9d6cef22d0a24, type: 3}
+  onGameStart: {fileID: 8300000, guid: c8999f0e4e399ad4c89403953b35173d, type: 3}
+  onVictory: {fileID: 8300000, guid: 09ea8103b65a1144dacbb0ba08906537, type: 3}
+  attackSFX: {fileID: 8300000, guid: cc675d73cdcb1ab4894e3924bd61bd34, type: 3}
+  impactSFX: {fileID: 8300000, guid: fc8f65ece2e7af549904ba343787ad50, type: 3}

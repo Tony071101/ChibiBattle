@@ -247,19 +247,19 @@ AnimatorController:
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: isReloading
     m_Type: 4
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   - m_Name: death
     m_Type: 9
     m_DefaultFloat: 0
     m_DefaultInt: 0
     m_DefaultBool: 0
-    m_Controller: {fileID: 0}
+    m_Controller: {fileID: 9100000}
   m_AnimatorLayers:
   - serializedVersion: 5
     m_Name: Base Layer
@@ -288,7 +288,7 @@ AnimatorController:
   - serializedVersion: 5
     m_Name: Reloading
     m_StateMachine: {fileID: -5039256464872799867}
-    m_Mask: {fileID: 31900000, guid: 31a055758583214488d87a84b0462d92, type: 2}
+    m_Mask: {fileID: 31900000, guid: 247c288ad534c6b46a0e8f8b46de897d, type: 2}
     m_Motions: []
     m_Behaviours: []
     m_BlendingMode: 0
